@@ -1,0 +1,376 @@
+// Invoice Limit Tracker Serbia — Prisma Schema
+// All monetary values stored as Decimal(18,4) — never float
+// Every domain table is scoped by organizationId for multi-tenant isolation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum MemberRole {
+  OWNER
+}
+
+enum ClientStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ClientBillingModel {
+  FIXED
+  HOURLY
+}
+
+enum AppLocale {
+  EN
+  SR
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum RateSource {
+  NBS_MIDDLE
+  FALLBACK_PRIOR
+  MANUAL_OVERRIDE
+}
+
+enum ReportingBasis {
+  ISSUE_DATE
+  PAYMENT_DATE
+}
+
+enum ForecastScenario {
+  CONSERVATIVE
+  EXPECTED
+  OPTIMISTIC
+}
+
+enum ForecastConfidence {
+  PLANNED
+  LIKELY
+  CONFIRMED
+}
+
+enum ForecastRecurrence {
+  ONE_TIME
+  MONTHLY
+  QUARTERLY
+}
+
+enum ForecastStatus {
+  ACTIVE
+  CANCELLED
+}
+
+enum AuditAction {
+  INVOICE_CREATED
+  INVOICE_UPDATED
+  INVOICE_STATUS_CHANGED
+  INVOICE_CANCELLED
+  INVOICE_DELETED
+  RATE_FETCHED
+  RATE_FALLBACK_USED
+  RATE_MANUALLY_OVERRIDDEN
+  FORECAST_CREATED
+  FORECAST_UPDATED
+  FORECAST_CANCELLED
+  FORECAST_SNAPSHOT_SAVED
+  FORECAST_SNAPSHOT_LOADED
+  FORECAST_SNAPSHOT_DELETED
+  ANNUAL_LIMIT_CHANGED
+  ORG_SETTINGS_UPDATED
+  CLIENT_CREATED
+  CLIENT_UPDATED
+  CLIENT_ARCHIVED
+  CLIENT_DELETED
+}
+
+// ─── Organization ─────────────────────────────────────────────────────────────
+
+model Organization {
+  id                  String         @id @default(cuid())
+  clerkUserId         String         @unique // MVP: one user per org
+  name                String
+  timezone            String         @default("Europe/Belgrade")
+  countryCode         String         @default("RS")
+  primaryCurrency     String         @default("RSD")
+  annualThresholdRsd  Decimal        @default(6000000) @db.Decimal(18, 4)
+  taxLimitTierId      String?
+  defaultReportingBasis ReportingBasis @default(ISSUE_DATE)
+  preferredLocale       AppLocale      @default(EN)
+  disclaimerAcceptedAt DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  members             OrganizationMember[]
+  clients             Client[]
+  invoices            Invoice[]
+  forecastEntries     ForecastEntry[]
+  forecastSnapshots   ForecastSnapshot[]
+  auditEvents         AuditEvent[]
+  planningRates       PlanningExchangeRate[]
+  annualLimitHistory  AnnualLimitHistory[]
+  clientHourlyRates   ClientHourlyRateHistory[]
+
+  @@index([clerkUserId])
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  clerkUserId    String
+  role           MemberRole   @default(OWNER)
+  joinedAt       DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, clerkUserId])
+  @@index([clerkUserId])
+}
+
+// ─── Client ───────────────────────────────────────────────────────────────────
+
+model Client {
+  id              String       @id @default(cuid())
+  organizationId  String
+  displayName     String
+  legalName       String?
+  countryCode     String?
+  email           String?
+  taxId           String?
+  defaultCurrency String?
+  notes           String?
+  billingModel    ClientBillingModel @default(FIXED)
+  hourlyRate      Decimal?           @db.Decimal(18, 4)
+  hourlyCurrency  String?            @db.Char(3)
+  status          ClientStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoices        Invoice[]
+  forecastEntries ForecastEntry[]
+  hourlyRateHistory ClientHourlyRateHistory[]
+
+  @@index([organizationId, status])
+  @@index([organizationId, displayName])
+  @@index([organizationId])
+}
+
+model ClientHourlyRateHistory {
+  id             String   @id @default(cuid())
+  organizationId String
+  clientId       String
+  ratePerHour    Decimal  @db.Decimal(18, 4)
+  currency       String   @db.Char(3)
+  effectiveFrom  DateTime @default(now())
+  note           String?
+  changedBy      String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  client         Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, effectiveFrom(sort: Desc)])
+  @@index([organizationId])
+}
+
+// ─── Invoice ──────────────────────────────────────────────────────────────────
+
+model Invoice {
+  id                String        @id @default(cuid())
+  organizationId    String
+  clientId          String
+  invoiceNumber     String        @db.VarChar(50)
+
+  issueDate         DateTime      @db.Date
+  dueDate           DateTime?     @db.Date
+  paymentDate       DateTime?     @db.Date
+
+  originalAmount    Decimal       @db.Decimal(18, 4)
+  billableHours     Decimal?      @db.Decimal(18, 4)
+  currency          String        @db.Char(3)
+
+  // Rate snapshot — immutable after creation
+  appliedMiddleRate Decimal       @db.Decimal(18, 6)  // rate per 1 unit of currency
+  rateEffectiveDate DateTime      @db.Date
+  rsdAmount         Decimal       @db.Decimal(18, 4)  // originalAmount * appliedMiddleRate
+  rateSource        RateSource
+  rateSourceUrl     String?
+  rateFetchedAt     DateTime?
+  isFallbackRate    Boolean       @default(false)
+  fallbackReason    String?
+
+  // Manual override fields
+  manualOverride    Boolean       @default(false)
+  overrideReason    String?
+  originalAutoRate  Decimal?      @db.Decimal(18, 6)
+  originalAutoRateEffectiveDate DateTime? @db.Date
+
+  status            InvoiceStatus @default(DRAFT)
+  includeInLimit    Boolean       @default(true)
+  notes             String?
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  createdBy         String        // clerkUserId
+  updatedBy         String        // clerkUserId
+
+  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  client            Client        @relation(fields: [clientId], references: [id])
+  attachments       InvoiceAttachment[]
+
+  @@unique([organizationId, invoiceNumber])
+  @@index([organizationId, issueDate])
+  @@index([organizationId, paymentDate])
+  @@index([organizationId, status])
+  @@index([organizationId, clientId])
+  @@index([organizationId])
+}
+
+model InvoiceAttachment {
+  id           String   @id @default(cuid())
+  invoiceId    String
+  organizationId String
+  fileName     String
+  mimeType     String
+  storageKey   String
+  sizeBytes    Int
+  uploadedAt   DateTime @default(now())
+
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@index([organizationId])
+}
+
+// ─── Forecast ─────────────────────────────────────────────────────────────────
+
+model ForecastEntry {
+  id                  String             @id @default(cuid())
+  organizationId      String
+  clientId            String?
+  expectedDate        DateTime           @db.Date
+  billingModel        ClientBillingModel @default(FIXED)
+  billableHours       Decimal?           @db.Decimal(18, 4)
+  originalAmount      Decimal            @db.Decimal(18, 4)
+  currency            String             @db.Char(3)
+  scenario            ForecastScenario   @default(EXPECTED)
+  confidence          ForecastConfidence @default(PLANNED)
+  recurrence          ForecastRecurrence @default(ONE_TIME)
+  recurrenceEndDate   DateTime?          @db.Date
+  planningRateUsed    Decimal            @db.Decimal(18, 6)
+  estimatedRsdAmount  Decimal            @db.Decimal(18, 4)
+  planningRateLabel   String             @default("Estimate") // e.g. "NBS rate 24.06.2026" or "User planning rate"
+  status              ForecastStatus     @default(ACTIVE)
+  notes               String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  createdBy           String
+
+  organization        Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  client              Client?            @relation(fields: [clientId], references: [id])
+
+  @@index([organizationId, expectedDate, scenario, status])
+  @@index([organizationId])
+}
+
+model ForecastSnapshot {
+  id             String       @id @default(cuid())
+  organizationId String
+  name           String
+  year           Int
+  description    String?
+  data           Json
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, year, name])
+  @@index([organizationId, year])
+}
+
+// ─── Planning Exchange Rates ───────────────────────────────────────────────────
+
+model PlanningExchangeRate {
+  id             String       @id @default(cuid())
+  organizationId String
+  currency       String       @db.Char(3)
+  ratePerUnit    Decimal      @db.Decimal(18, 6)
+  label          String?
+  updatedAt      DateTime     @updatedAt
+  updatedBy      String
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, currency])
+}
+
+// ─── Exchange Rate Cache (global — public NBS data) ───────────────────────────
+
+model ExchangeRateCache {
+  id           String   @id @default(cuid())
+  currency     String   @db.Char(3)
+  rateDate     DateTime @db.Date  // requested date
+  effectiveDate DateTime @db.Date // date list was actually published
+  middleRate   Decimal  @db.Decimal(18, 6)
+  unit         Int      @default(1) // NBS "Važi za" (1 or 100)
+  ratePerUnit  Decimal  @db.Decimal(18, 6) // middleRate / unit
+  sourceUrl    String
+  listTypeId   Int      @default(3)
+  rawPayload   Json?
+  fetchedAt    DateTime @default(now())
+  isFallback   Boolean  @default(false)
+  fallbackReason String?
+
+  @@unique([currency, rateDate, listTypeId])
+  @@index([currency, effectiveDate])
+  @@index([rateDate])
+}
+
+// ─── Audit Log ────────────────────────────────────────────────────────────────
+
+model AuditEvent {
+  id             String      @id @default(cuid())
+  organizationId String
+  entityType     String      // "Invoice" | "Client" | "ForecastEntry" | "Organization"
+  entityId       String?
+  action         AuditAction
+  actorUserId    String
+  payload        Json        // before/after diff or metadata
+  createdAt      DateTime    @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([organizationId, entityType, entityId])
+}
+
+// ─── Annual Limit History ─────────────────────────────────────────────────────
+
+model AnnualLimitHistory {
+  id             String       @id @default(cuid())
+  organizationId String
+  previousValue  Decimal      @db.Decimal(18, 4)
+  newValue       Decimal      @db.Decimal(18, 4)
+  reason         String?
+  changedBy      String
+  changedAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, changedAt(sort: Desc)])
+}

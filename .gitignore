@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+.cursor/
 
 # debug
 npm-debug.log*
@@ -39,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
+
+# clerk configuration (can include secrets)
+/.clerk/
