@@ -2,7 +2,9 @@
 
 A desktop-first SaaS workspace for Serbian entrepreneurs and small agencies who need to track issued invoices, monitor annual revenue against a configurable RSD threshold, and plan future billing with confidence.
 
-**Live demo:** _Add your Vercel URL after deployment_
+**Live demo:** https://invoice-limit-tracker-serbia.vercel.app
+
+**Repository:** https://github.com/mdostanic85/invoice-limit-tracker-serbia
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
