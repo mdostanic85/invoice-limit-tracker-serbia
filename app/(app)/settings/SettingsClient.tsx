@@ -28,6 +28,7 @@ import {
   CountryLimitFormFields,
   applyCountryTaxDefaults,
 } from "@/components/domain/CountryLimitFormFields";
+import { OrganizationLogoUpload } from "@/components/domain/OrganizationLogoUpload";
 import { getCountryTaxProfile } from "@/lib/domain/country-tax-rules";
 
 const { Title, Text } = Typography;
@@ -52,6 +53,7 @@ interface Props {
     issuerEmail: string | null;
     issuerPhone: string | null;
     invoicePdfTemplate: "MINIMAL" | "AGENCY";
+    logoUrl: string | null;
   };
   limitHistory: Array<{
     previousValue: string;
@@ -189,6 +191,9 @@ export function SettingsClient({ organization, limitHistory }: Props) {
             </Text>
           }
         >
+            <Form.Item label={t("settings.companyLogo")}>
+              <OrganizationLogoUpload logoUrl={organization.logoUrl} />
+            </Form.Item>
             <Form.Item name="issuerLegalName" label={t("settings.issuerLegalName")}>
               <Input placeholder={t("settings.placeholderIssuerLegal")} />
             </Form.Item>

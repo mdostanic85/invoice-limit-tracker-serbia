@@ -545,6 +545,17 @@ export const en: MessageTree = {
     placeholderIssuerBank: "e.g. 160-123456-78",
     placeholderIssuerEmail: "billing@example.com",
     placeholderIssuerPhone: "+381 60 123 4567",
+    companyLogo: "Company logo",
+    logoUploadHint: "Click or drag your company logo here",
+    logoUploadSubhint: "Shown in the header of generated invoice PDFs",
+    logoFormatHint: "PNG or JPEG, max 2 MB. Recommended: horizontal logo on transparent background.",
+    logoReplace: "Replace logo",
+    logoRemove: "Remove logo",
+    logoUploaded: "Logo uploaded",
+    logoRemoved: "Logo removed",
+    logoTooLarge: "Logo must be 2 MB or smaller",
+    logoAlt: "Company logo",
+    logoUploadFailed: "Logo upload failed — you can add it later in Settings.",
   },
   onboarding: {
     title: "Invoice Limit Tracker Serbia",
@@ -574,6 +585,8 @@ export const en: MessageTree = {
     modalP3:
       "Exchange rates are sourced from NBS for planning purposes. Forecasts are estimates only.",
     modalP4: "By continuing, you acknowledge these limitations.",
+    companyLogo: "Company logo",
+    logoOptionalHint: "Optional — appears in the header of invoice PDFs you generate.",
   },
   domain: {
     limitImpact: "Limit impact ({basis} basis, {year})",

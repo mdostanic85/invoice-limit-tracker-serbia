@@ -6,6 +6,11 @@ import {
 } from "@/lib/services/invoice-pdf-service";
 import type { Client, Invoice, Organization } from "@prisma/client";
 
+const TINY_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64"
+);
+
 function buildFixture(template: "MINIMAL" | "AGENCY" = "MINIMAL") {
   const organization = {
     id: "org-1",
@@ -27,6 +32,7 @@ function buildFixture(template: "MINIMAL" | "AGENCY" = "MINIMAL") {
     issuerEmail: "marko@example.rs",
     issuerPhone: "+381 60 123 4567",
     invoicePdfTemplate: template,
+    logoUrl: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   } satisfies Organization;
@@ -96,6 +102,14 @@ describe("invoice-pdf-service", () => {
   it("generates a valid PDF buffer for agency template", async () => {
     const input = buildFixture("AGENCY");
     const buffer = await generateInvoicePdfBuffer(input);
+
+    expect(buffer.byteLength).toBeGreaterThan(1000);
+    expect(buffer.subarray(0, 4).toString()).toBe("%PDF");
+  });
+
+  it("generates a valid PDF buffer when a logo image is provided", async () => {
+    const input = buildFixture("AGENCY");
+    const buffer = await generateInvoicePdfBuffer({ ...input, logoBuffer: TINY_PNG });
 
     expect(buffer.byteLength).toBeGreaterThan(1000);
     expect(buffer.subarray(0, 4).toString()).toBe("%PDF");

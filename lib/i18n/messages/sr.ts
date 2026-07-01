@@ -545,6 +545,17 @@ export const sr: MessageTree = {
     placeholderIssuerBank: "npr. 160-123456-78",
     placeholderIssuerEmail: "naplata@primer.rs",
     placeholderIssuerPhone: "+381 60 123 4567",
+    companyLogo: "Logo firme",
+    logoUploadHint: "Kliknite ili prevucite logo firme ovde",
+    logoUploadSubhint: "Prikazuje se u zaglavlju generisanih PDF faktura",
+    logoFormatHint: "PNG ili JPEG, max 2 MB. Preporuka: horizontalni logo na providnoj pozadini.",
+    logoReplace: "Zameni logo",
+    logoRemove: "Ukloni logo",
+    logoUploaded: "Logo je otpremljen",
+    logoRemoved: "Logo je uklonjen",
+    logoTooLarge: "Logo mora biti manji od 2 MB",
+    logoAlt: "Logo firme",
+    logoUploadFailed: "Otpremanje loga nije uspelo — možete ga dodati kasnije u Podešavanjima.",
   },
   onboarding: {
     title: "Praćenje limita faktura Srbija",
@@ -574,6 +585,8 @@ export const sr: MessageTree = {
     modalP3:
       "Kursne liste preuzimaju se sa NBS-a za planiranje. Prognoze su samo procene.",
     modalP4: "Nastavkom prihvatate ova ograničenja.",
+    companyLogo: "Logo firme",
+    logoOptionalHint: "Opciono — prikazuje se u zaglavlju PDF faktura koje generišete.",
   },
   domain: {
     limitImpact: "Uticaj na limit (osnova: {basis}, {year})",

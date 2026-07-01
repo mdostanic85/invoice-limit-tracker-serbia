@@ -4,6 +4,7 @@ import type { Client, Invoice, Organization, InvoicePdfTemplate } from "@prisma/
 import { getInvoicePdfMessages } from "@/lib/i18n/messages/pdf";
 import { dbLocaleToLocale } from "@/lib/i18n/types";
 import { formatCurrency, formatDate, formatRate } from "@/lib/utils/format";
+import { fetchOrganizationLogoBuffer } from "@/lib/services/org-logo-service";
 
 const FONT_DIR = path.join(process.cwd(), "node_modules/dejavu-fonts-ttf/ttf");
 const FONT_REGULAR = path.join(FONT_DIR, "DejaVuSans.ttf");
@@ -16,6 +17,7 @@ export interface InvoicePdfInput {
   organization: Organization;
   invoice: Invoice;
   client: Client;
+  logoBuffer?: Buffer | null;
 }
 
 function statusLabel(
@@ -245,33 +247,59 @@ function clientLines(client: Client): string[] {
   ];
 }
 
+function drawLogo(
+  doc: PDFKit.PDFDocument,
+  logoBuffer: Buffer,
+  x: number,
+  y: number,
+  maxWidth: number,
+  maxHeight: number
+) {
+  doc.image(logoBuffer, x, y, { fit: [maxWidth, maxHeight] });
+}
+
 function renderMinimal(
   doc: PDFKit.PDFDocument,
   input: InvoicePdfInput,
   labels: ReturnType<typeof getInvoicePdfMessages>,
   locale: string
 ) {
-  const { organization, invoice, client } = input;
+  const { organization, invoice, client, logoBuffer } = input;
   let y = PAGE_MARGIN;
+  const logoWidth = 120;
+  const logoHeight = 48;
+  const hasLogo = Boolean(logoBuffer);
 
-  doc.font(FONT_BOLD).fontSize(22).fillColor("#111111").text(labels.title, PAGE_MARGIN, y);
-  y += 34;
+  if (hasLogo && logoBuffer) {
+    drawLogo(doc, logoBuffer, PAGE_MARGIN, y, logoWidth, logoHeight);
+    doc
+      .font(FONT_BOLD)
+      .fontSize(18)
+      .fillColor("#111111")
+      .text(labels.title, PAGE_MARGIN + logoWidth + 16, y + 10, { width: 160 });
+    y += logoHeight + 12;
+  } else {
+    doc.font(FONT_BOLD).fontSize(22).fillColor("#111111").text(labels.title, PAGE_MARGIN, y);
+    y += 34;
+  }
 
   const metaX = PAGE_MARGIN + 280;
-  y = drawLabelValue(doc, metaX, y - 34, labels.invoiceNumber, invoice.invoiceNumber, 215, true);
-  if (invoice.dueDate) {
-    drawLabelValue(doc, metaX, y, labels.dueDate, formatDate(invoice.dueDate, locale), 215);
-  }
-  drawLabelValue(
+  const metaStartY = hasLogo ? PAGE_MARGIN : y - 34;
+  let metaY = drawLabelValue(
     doc,
     metaX,
-    y + (invoice.dueDate ? 36 : 0),
-    labels.issueDate,
-    formatDate(invoice.issueDate, locale),
-    215
+    metaStartY,
+    labels.invoiceNumber,
+    invoice.invoiceNumber,
+    215,
+    true
   );
+  if (invoice.dueDate) {
+    metaY = drawLabelValue(doc, metaX, metaY, labels.dueDate, formatDate(invoice.dueDate, locale), 215);
+  }
+  drawLabelValue(doc, metaX, metaY, labels.issueDate, formatDate(invoice.issueDate, locale), 215);
 
-  y = Math.max(y, PAGE_MARGIN + 70);
+  y = Math.max(y, PAGE_MARGIN + (hasLogo ? logoHeight : 70));
   doc.moveTo(PAGE_MARGIN, y).lineTo(PAGE_MARGIN + CONTENT_WIDTH, y).strokeColor("#e8e8e8").stroke();
   y += 16;
 
@@ -328,21 +356,28 @@ function renderAgency(
   labels: ReturnType<typeof getInvoicePdfMessages>,
   locale: string
 ) {
-  const { organization, invoice, client } = input;
+  const { organization, invoice, client, logoBuffer } = input;
   let y = PAGE_MARGIN;
+  const headerHeight = logoBuffer ? 64 : 56;
 
-  doc
-    .rect(PAGE_MARGIN, y, CONTENT_WIDTH, 56)
-    .fill("#1a1a2e");
+  doc.rect(PAGE_MARGIN, y, CONTENT_WIDTH, headerHeight).fill("#1a1a2e");
+
+  let textX = PAGE_MARGIN + 16;
+  if (logoBuffer) {
+    doc.roundedRect(PAGE_MARGIN + 12, y + 10, 104, 44, 4).fill("#ffffff");
+    drawLogo(doc, logoBuffer, PAGE_MARGIN + 16, y + 14, 96, 36);
+    textX = PAGE_MARGIN + 126;
+  }
+
   const headerName = organization.issuerLegalName?.trim() || organization.name;
-  doc.font(FONT_BOLD).fontSize(16).fillColor("#ffffff").text(headerName, PAGE_MARGIN + 16, y + 12, {
-    width: CONTENT_WIDTH - 32,
+  doc.font(FONT_BOLD).fontSize(16).fillColor("#ffffff").text(headerName, textX, y + 12, {
+    width: CONTENT_WIDTH - (textX - PAGE_MARGIN) - 176,
   });
   doc
     .font(FONT_REGULAR)
     .fontSize(9)
     .fillColor("#c7d2fe")
-    .text(labels.title, PAGE_MARGIN + 16, y + 34, { width: 200 });
+    .text(labels.title, textX, y + 34, { width: 200 });
   doc
     .font(FONT_BOLD)
     .fontSize(11)
@@ -351,7 +386,7 @@ function renderAgency(
       width: 144,
       align: "right",
     });
-  y += 72;
+  y += headerHeight + 16;
 
   const boxHeight = 108;
   doc.roundedRect(PAGE_MARGIN, y, CONTENT_WIDTH / 2 - 8, boxHeight, 4).strokeColor("#e5e7eb").stroke();
@@ -447,6 +482,13 @@ function renderInvoicePdf(
 }
 
 export async function generateInvoicePdfBuffer(input: InvoicePdfInput): Promise<Buffer> {
+  const logoBuffer =
+    input.logoBuffer !== undefined
+      ? input.logoBuffer
+      : await fetchOrganizationLogoBuffer(input.organization.logoUrl);
+
+  const renderInput: InvoicePdfInput = { ...input, logoBuffer };
+
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: PAGE_MARGIN });
     const chunks: Buffer[] = [];
@@ -455,7 +497,7 @@ export async function generateInvoicePdfBuffer(input: InvoicePdfInput): Promise<
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    renderInvoicePdf(doc, input, input.organization.invoicePdfTemplate);
+    renderInvoicePdf(doc, renderInput, input.organization.invoicePdfTemplate);
     doc.end();
   });
 }

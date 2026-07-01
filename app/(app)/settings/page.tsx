@@ -32,6 +32,7 @@ export default async function SettingsPage() {
         issuerEmail: ctx.organization.issuerEmail,
         issuerPhone: ctx.organization.issuerPhone,
         invoicePdfTemplate: ctx.organization.invoicePdfTemplate,
+        logoUrl: ctx.organization.logoUrl,
       }}
       limitHistory={limitHistory.map((h) => ({
         previousValue: h.previousValue.toString(),

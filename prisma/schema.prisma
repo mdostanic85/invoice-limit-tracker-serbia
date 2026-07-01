@@ -124,6 +124,7 @@ model Organization {
   issuerEmail               String?
   issuerPhone               String?
   invoicePdfTemplate        InvoicePdfTemplate @default(MINIMAL)
+  logoUrl                   String?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 
