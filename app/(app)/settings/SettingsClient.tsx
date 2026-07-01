@@ -225,6 +225,7 @@ export function SettingsClient({ organization, limitHistory }: Props) {
               {t("common.saveSettings")}
             </PrimaryButton>
         </Card>
+        </PageStack>
         </Form>
 
         <Card
