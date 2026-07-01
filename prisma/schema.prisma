@@ -73,6 +73,11 @@ enum ForecastStatus {
   CANCELLED
 }
 
+enum InvoicePdfTemplate {
+  MINIMAL
+  AGENCY
+}
+
 enum AuditAction {
   INVOICE_CREATED
   INVOICE_UPDATED
@@ -110,6 +115,15 @@ model Organization {
   defaultReportingBasis ReportingBasis @default(ISSUE_DATE)
   preferredLocale       AppLocale      @default(EN)
   disclaimerAcceptedAt DateTime?
+  // Issuer profile — shown on generated invoice PDFs
+  issuerLegalName           String?
+  issuerAddress             String?
+  issuerTaxId               String?  // PIB
+  issuerRegistrationNumber  String?  // matični broj
+  issuerBankAccount         String?
+  issuerEmail               String?
+  issuerPhone               String?
+  invoicePdfTemplate        InvoicePdfTemplate @default(MINIMAL)
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 

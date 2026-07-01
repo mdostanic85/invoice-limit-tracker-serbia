@@ -29,6 +29,7 @@ import { TableRowActions } from "@/components/layout/TableRowActions";
 import { formatCurrency, formatDate, formatRate } from "@/lib/utils/format";
 import type { ColumnsType } from "antd/es/table";
 import { deleteInvoiceAction, duplicateInvoiceAction } from "@/app/actions/invoice-actions";
+import { downloadInvoicePdf } from "@/lib/utils/invoice-pdf-download";
 import { amountCellStyle } from "@/lib/theme/styles";
 import { invoiceStatusLabel, invoiceCountLabel } from "@/lib/i18n/helpers";
 
@@ -216,6 +217,16 @@ export function InvoicesClient({
     });
   }
 
+  function handleDownloadPdf(invoice: Invoice) {
+    startTransition(async () => {
+      try {
+        await downloadInvoicePdf(invoice.id);
+      } catch {
+        message.error(t("invoices.pdfFailed"));
+      }
+    });
+  }
+
   function handleDelete(invoice: Invoice) {
     modal.confirm({
       title: t("invoices.deleteConfirm"),
@@ -391,6 +402,11 @@ export function InvoicesClient({
         <TableRowActions
           actions={[
             { key: "edit", label: t("common.edit"), onClick: () => openEdit(r) },
+            {
+              key: "pdf",
+              label: t("invoices.downloadPdf"),
+              onClick: () => handleDownloadPdf(r),
+            },
             { key: "duplicate", label: t("common.duplicate"), onClick: () => handleDuplicate(r) },
             { key: "delete", label: t("common.delete"), onClick: () => handleDelete(r), danger: true },
           ]}

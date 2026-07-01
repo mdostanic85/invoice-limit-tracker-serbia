@@ -24,6 +24,7 @@ import {
   ArrowLeftOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
+  FilePdfOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -53,6 +54,7 @@ import {
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { invoiceStatusLabel } from "@/lib/i18n/helpers";
+import { downloadInvoicePdf } from "@/lib/utils/invoice-pdf-download";
 import type { Translator } from "@/lib/i18n/types";
 import {
   INVOICE_CURRENCIES,
@@ -151,6 +153,7 @@ export function InvoiceFormClient({
   const [form] = Form.useForm();
   const invoiceNumberEdited = useRef(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPdfDownloading, setIsPdfDownloading] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
     () => initialInvoice?.clientId ?? undefined
   );
@@ -459,18 +462,41 @@ export function InvoiceFormClient({
     }
   }
 
+  async function handleDownloadPdf() {
+    if (!invoiceId) return;
+    setIsPdfDownloading(true);
+    try {
+      await downloadInvoicePdf(invoiceId);
+    } catch {
+      message.error(t("invoices.pdfFailed"));
+    } finally {
+      setIsPdfDownloading(false);
+    }
+  }
+
   return (
     <PageContent
       title={isEdit ? t("invoices.editTitle") : t("invoices.newTitle")}
       extra={
         <PageHeaderActions
           secondary={
-            <SecondaryButton
-              icon={<ArrowLeftOutlined />}
-              onClick={() => router.push(returnPath)}
-            >
-              {t("common.back")}
-            </SecondaryButton>
+            <>
+              <SecondaryButton
+                icon={<ArrowLeftOutlined />}
+                onClick={() => router.push(returnPath)}
+              >
+                {t("common.back")}
+              </SecondaryButton>
+              {isEdit && invoiceId ? (
+                <SecondaryButton
+                  icon={<FilePdfOutlined />}
+                  loading={isPdfDownloading}
+                  onClick={handleDownloadPdf}
+                >
+                  {t("invoices.downloadPdf")}
+                </SecondaryButton>
+              ) : null}
+            </>
           }
           primary={
             <PrimaryButton

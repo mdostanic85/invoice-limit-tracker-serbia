@@ -49,9 +49,32 @@ function withThresholdValidation<T extends z.ZodTypeAny>(schema: T) {
 
 export const createOrganizationSchema = withThresholdValidation(createOrganizationBaseSchema);
 
+const optionalOrgText = (max: number) =>
+  z
+    .string()
+    .max(max)
+    .optional()
+    .nullable()
+    .or(z.literal(""))
+    .transform((v) => (v === "" || v === undefined ? null : v));
+
 export const updateOrganizationSchema = withThresholdValidation(
   createOrganizationBaseSchema.partial().extend({
     preferredLocale: z.enum(["EN", "SR"]).optional(),
+    issuerLegalName: optionalOrgText(200),
+    issuerAddress: optionalOrgText(500),
+    issuerTaxId: optionalOrgText(50),
+    issuerRegistrationNumber: optionalOrgText(50),
+    issuerBankAccount: optionalOrgText(120),
+    issuerEmail: z
+      .string()
+      .email()
+      .optional()
+      .nullable()
+      .or(z.literal(""))
+      .transform((v) => (v === "" || v === undefined ? null : v)),
+    issuerPhone: optionalOrgText(40),
+    invoicePdfTemplate: z.enum(["MINIMAL", "AGENCY"]).optional(),
   })
 );
 

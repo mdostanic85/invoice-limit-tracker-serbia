@@ -44,6 +44,14 @@ interface Props {
     limitCurrency: string;
     defaultReportingBasis: "ISSUE_DATE" | "PAYMENT_DATE";
     preferredLocale: "EN" | "SR";
+    issuerLegalName: string | null;
+    issuerAddress: string | null;
+    issuerTaxId: string | null;
+    issuerRegistrationNumber: string | null;
+    issuerBankAccount: string | null;
+    issuerEmail: string | null;
+    issuerPhone: string | null;
+    invoicePdfTemplate: "MINIMAL" | "AGENCY";
   };
   limitHistory: Array<{
     previousValue: string;
@@ -124,20 +132,29 @@ export function SettingsClient({ organization, limitHistory }: Props) {
           />
         )}
 
+        <Form
+          form={orgForm}
+          layout="vertical"
+          onFinish={handleOrgSave}
+          initialValues={{
+            name: organization.name,
+            timezone: organization.timezone,
+            countryCode: organization.countryCode,
+            primaryCurrency: organization.primaryCurrency,
+            defaultReportingBasis: organization.defaultReportingBasis,
+            preferredLocale: organization.preferredLocale,
+            issuerLegalName: organization.issuerLegalName ?? "",
+            issuerAddress: organization.issuerAddress ?? "",
+            issuerTaxId: organization.issuerTaxId ?? "",
+            issuerRegistrationNumber: organization.issuerRegistrationNumber ?? "",
+            issuerBankAccount: organization.issuerBankAccount ?? "",
+            issuerEmail: organization.issuerEmail ?? "",
+            issuerPhone: organization.issuerPhone ?? "",
+            invoicePdfTemplate: organization.invoicePdfTemplate,
+          }}
+        >
+        <PageStack>
         <Card title={t("settings.organization")}>
-          <Form
-            form={orgForm}
-            layout="vertical"
-            onFinish={handleOrgSave}
-            initialValues={{
-              name: organization.name,
-              timezone: organization.timezone,
-              countryCode: organization.countryCode,
-              primaryCurrency: organization.primaryCurrency,
-              defaultReportingBasis: organization.defaultReportingBasis,
-              preferredLocale: organization.preferredLocale,
-            }}
-          >
             <Form.Item name="name" label={t("settings.orgName")} rules={[{ required: true }]}>
               <Input />
             </Form.Item>
@@ -162,11 +179,53 @@ export function SettingsClient({ organization, limitHistory }: Props) {
                 ]}
               />
             </Form.Item>
+        </Card>
+
+        <Card
+          title={t("settings.sectionIssuerProfile")}
+          extra={
+            <Text type="secondary" style={{ fontWeight: 400, maxWidth: 360 }}>
+              {t("settings.sectionIssuerProfileHint")}
+            </Text>
+          }
+        >
+            <Form.Item name="issuerLegalName" label={t("settings.issuerLegalName")}>
+              <Input placeholder={t("settings.placeholderIssuerLegal")} />
+            </Form.Item>
+            <Form.Item name="issuerAddress" label={t("settings.issuerAddress")}>
+              <Input.TextArea rows={2} placeholder={t("settings.placeholderIssuerAddress")} />
+            </Form.Item>
+            <Form.Item name="issuerTaxId" label={t("settings.issuerTaxId")}>
+              <Input placeholder={t("settings.placeholderIssuerTaxId")} />
+            </Form.Item>
+            <Form.Item
+              name="issuerRegistrationNumber"
+              label={t("settings.issuerRegistrationNumber")}
+            >
+              <Input placeholder={t("settings.placeholderIssuerMb")} />
+            </Form.Item>
+            <Form.Item name="issuerBankAccount" label={t("settings.issuerBankAccount")}>
+              <Input placeholder={t("settings.placeholderIssuerBank")} />
+            </Form.Item>
+            <Form.Item name="issuerEmail" label={t("settings.issuerEmail")}>
+              <Input type="email" placeholder={t("settings.placeholderIssuerEmail")} />
+            </Form.Item>
+            <Form.Item name="issuerPhone" label={t("settings.issuerPhone")}>
+              <Input placeholder={t("settings.placeholderIssuerPhone")} />
+            </Form.Item>
+            <Form.Item name="invoicePdfTemplate" label={t("settings.invoicePdfTemplate")}>
+              <Select
+                options={[
+                  { value: "MINIMAL", label: t("settings.templateMinimal") },
+                  { value: "AGENCY", label: t("settings.templateAgency") },
+                ]}
+              />
+            </Form.Item>
             <PrimaryButton htmlType="submit" loading={isPending}>
               {t("common.saveSettings")}
             </PrimaryButton>
-          </Form>
         </Card>
+        </Form>
 
         <Card
           title={t("settings.sectionAnnualLimit")}
