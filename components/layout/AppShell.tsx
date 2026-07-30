@@ -13,12 +13,12 @@ import {
   SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { usePathname, useRouter } from "next/navigation";
 import { TopBarToolbar } from "@/components/layout/TopBarToolbar";
 import { TopBarYearSelect } from "@/components/layout/TopBarYearSelect";
 import { TextButton } from "@/components/layout/AppButton";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 const { Sider, Content, Header } = Layout;
@@ -85,6 +85,7 @@ export function AppShell({ children, orgName }: Props) {
   }));
 
   const contentMarginLeft = mobile ? 0 : collapsed ? 64 : 220;
+  const navCollapsed = mobile ? false : collapsed;
   const headerTopOffset = "env(safe-area-inset-top, 0px)";
   const headerTotalHeight = `calc(${HEADER_HEIGHT}px + ${headerTopOffset})`;
 
@@ -112,9 +113,15 @@ export function AppShell({ children, orgName }: Props) {
       )}
 
       <Sider
-        width={220}
+        className={[
+          "app-shell-sider",
+          mobileNavOpen ? "app-shell-sider--mobile-open" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        width={mobile ? 288 : 220}
         collapsedWidth={64}
-        collapsed={mobile ? false : collapsed}
+        collapsed={navCollapsed}
         collapsible
         trigger={null}
         style={{
@@ -133,8 +140,11 @@ export function AppShell({ children, orgName }: Props) {
       >
         {/* Logo / brand */}
         <div
+          className="app-shell-sider__brand"
           style={{
-            padding: collapsed ? `${token.paddingMD}px ${token.paddingSM}px` : token.paddingMD,
+            padding: navCollapsed
+              ? `${token.paddingMD}px ${token.paddingSM}px`
+              : token.paddingMD,
             borderBottom: `1px solid ${token.colorBorderSecondary}`,
             display: "flex",
             alignItems: "center",
@@ -146,9 +156,10 @@ export function AppShell({ children, orgName }: Props) {
             style={{ backgroundColor: token.colorPrimary, flexShrink: 0 }}
             icon={<BarChartOutlined />}
           />
-          {!collapsed && (
+          {!navCollapsed && (
             <Text
               style={{
+                flex: 1,
                 fontWeight: 700,
                 fontSize: token.fontSizeSM,
                 lineHeight: 1.2,
@@ -166,12 +177,20 @@ export function AppShell({ children, orgName }: Props) {
               </Text>
             </Text>
           )}
+          {mobile ? (
+            <TextButton
+              icon={<MenuFoldOutlined />}
+              onClick={() => setMobileNavOpen(false)}
+              aria-label={t("common.closeNav")}
+            />
+          ) : null}
         </div>
 
         <Menu
+          className="app-shell-sider__menu"
           mode="inline"
           selectedKeys={[selectedKey]}
-          inlineCollapsed={collapsed}
+          inlineCollapsed={navCollapsed}
           style={{
             border: "none",
             marginTop: token.marginXS,
@@ -186,9 +205,22 @@ export function AppShell({ children, orgName }: Props) {
             },
           }))}
         />
+
+        {mobile ? (
+          <div
+            className="app-shell-sider__footer"
+            style={{ borderTop: `1px solid ${token.colorBorderSecondary}` }}
+          >
+            <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+              {t("common.theme")}
+            </Text>
+            <ThemeToggle />
+          </div>
+        ) : null}
       </Sider>
 
       <Layout
+        className="app-shell-main"
         style={{
           marginLeft: contentMarginLeft,
           transition: "margin 0.2s",

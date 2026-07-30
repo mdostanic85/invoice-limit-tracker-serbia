@@ -53,6 +53,7 @@ export const sr: MessageTree = {
     disclaimer: "Odricanje od odgovornosti",
     light: "Svetla",
     dark: "Tamna",
+    swipeTable: "Prevucite tabelu ulevo ili udesno za ostale kolone.",
   },
   nav: {
     dashboard: "Kontrolna tabla",

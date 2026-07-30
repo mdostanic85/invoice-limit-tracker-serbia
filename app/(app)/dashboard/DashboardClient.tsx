@@ -17,12 +17,12 @@ import { ThresholdWarningBanner, hasThresholdAlerts } from "@/components/domain/
 import { InvoiceStatusTag } from "@/components/domain/InvoiceStatusTag";
 import { PageContent } from "@/components/layout/PageContent";
 import {
-  ListDataTable,
   ListTableInlineFilter,
   PageFilterPanel,
 } from "@/components/layout/ListDataTable";
 import { BentoGrid, BentoCell } from "@/components/layout/BentoGrid";
 import { DataTable } from "@/components/layout/DataTable";
+import { MobileRecordCard } from "@/components/layout/MobileRecordCard";
 import { KpiCard, DashboardKpiStat } from "@/components/layout/KpiCard";
 import {
   MonthlyRevenueChart,
@@ -433,6 +433,21 @@ export function DashboardClient({ data }: Props) {
             <DataTable
               dataSource={data.recentInvoices}
               columns={recentCols}
+              mobileCard={(invoice) => (
+                <MobileRecordCard
+                  eyebrow={invoice.client?.displayName ?? t("common.dash")}
+                  title={invoice.invoiceNumber}
+                  badge={<InvoiceStatusTag status={invoice.status} />}
+                  amount={formatRsd(invoice.rsdAmount.toString())}
+                  amountLabel={t("dashboard.columnAmountRsd")}
+                  details={[
+                    {
+                      label: t("dashboard.columnDate"),
+                      value: formatDate(invoice.issueDate),
+                    },
+                  ]}
+                />
+              )}
               pagination={false}
               rowKey="id"
               locale={{ emptyText: t("dashboard.noInvoices") }}
@@ -451,6 +466,27 @@ export function DashboardClient({ data }: Props) {
             <DataTable
               dataSource={data.upcomingForecast}
               columns={forecastCols}
+              mobileCard={(forecast) => (
+                <MobileRecordCard
+                  eyebrow={formatDate(forecast.expectedDate)}
+                  title={forecast.client?.displayName ?? t("common.dash")}
+                  amount={formatCurrency(
+                    forecast.originalAmount.toString(),
+                    forecast.currency
+                  )}
+                  amountLabel={t("common.amount")}
+                  details={[
+                    {
+                      label: t("dashboard.columnEstRsd"),
+                      value: (
+                        <Text strong className="amount-cell">
+                          {formatRsd(forecast.estimatedRsdAmount.toString())}
+                        </Text>
+                      ),
+                    },
+                  ]}
+                />
+              )}
               pagination={false}
               rowKey="id"
               locale={{ emptyText: t("dashboard.noForecast") }}

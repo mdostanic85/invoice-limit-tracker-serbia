@@ -698,6 +698,7 @@ export function ForecastClient({ data }: Props) {
           loading={isPending}
           pagination={false}
           scroll={{ x: 920 }}
+          mobileTableHint={t("common.swipeTable")}
           locale={{ emptyText: t("forecast.empty") }}
         />
       </PageStack>

@@ -13,6 +13,7 @@ import { useState } from "react";
 import type { ColumnsType } from "antd/es/table";
 import { PageContent } from "@/components/layout/PageContent";
 import { PageStack } from "@/components/layout/PageStack";
+import { MobileRecordCard } from "@/components/layout/MobileRecordCard";
 import { ListDataTable, ListTableSummaryRow } from "@/components/layout/ListDataTable";
 import { LinkButton } from "@/components/layout/AppButton";
 import { AppDrawer } from "@/components/layout/AppDrawer";
@@ -163,6 +164,50 @@ export function AuditLogClient({ data }: Props) {
         }
         dataSource={data?.events ?? []}
         columns={columns}
+        mobileCard={(event) => (
+          <MobileRecordCard
+            eyebrow={formatDateTime(event.createdAt)}
+            title={
+              <Tag color={ACTION_COLORS[event.action] ?? "default"}>
+                {auditActionLabel(t, event.action)}
+              </Tag>
+            }
+            details={[
+              {
+                label: t("audit.columnEntity"),
+                value: (
+                  <>
+                    {event.entityType}
+                    {event.entityId ? (
+                      <Text type="secondary">
+                        {" "}
+                        · {event.entityId.slice(0, 8)}…
+                      </Text>
+                    ) : null}
+                  </>
+                ),
+                fullWidth: true,
+              },
+              {
+                label: t("audit.columnActor"),
+                value: `${event.actorUserId.slice(0, 12)}…`,
+                fullWidth: true,
+              },
+            ]}
+            footer={
+              <>
+                <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                  {hasPayload(event.payload)
+                    ? t("audit.drawerDetails")
+                    : t("audit.noPayload")}
+                </Text>
+                <LinkButton onClick={() => openDetails(event)}>
+                  {t("audit.view")}
+                </LinkButton>
+              </>
+            }
+          />
+        )}
         rowKey="id"
         loading={false}
         scroll={{ x: 900 }}

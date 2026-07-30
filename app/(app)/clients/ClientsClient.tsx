@@ -16,6 +16,7 @@ import {
 import { PageContent } from "@/components/layout/PageContent";
 import { PageHeaderActions } from "@/components/layout/PageHeaderActions";
 import { PageStack } from "@/components/layout/PageStack";
+import { MobileRecordCard } from "@/components/layout/MobileRecordCard";
 import { ListDataTable, ListTableFilterBar, ListTableSearch, ListTableSummaryRow } from "@/components/layout/ListDataTable";
 import { PrimaryButton, SecondaryButton, LinkButton } from "@/components/layout/AppButton";
 import { TableRowActions } from "@/components/layout/TableRowActions";
@@ -154,6 +155,32 @@ export function ClientsClient({ clients: initialClients, showArchived }: Props) 
     });
   }
 
+  function actionsForClient(client: Client) {
+    return !showArchived
+      ? [
+          { key: "edit", label: t("common.edit"), onClick: () => openEdit(client) },
+          {
+            key: "archive",
+            label: t("common.archive"),
+            onClick: () => confirmArchive(client),
+            danger: true,
+          },
+        ]
+      : [
+          {
+            key: "restore",
+            label: t("common.restore"),
+            onClick: () => handleRestore(client.id),
+          },
+          {
+            key: "delete",
+            label: t("common.delete"),
+            onClick: () => confirmDelete(client),
+            danger: true,
+          },
+        ];
+  }
+
   const columns: ColumnsType<Client> = [
     {
       title: t("clients.displayName"),
@@ -240,29 +267,7 @@ export function ClientsClient({ clients: initialClients, showArchived }: Props) 
       width: 160,
       fixed: "right",
       render: (_: unknown, r: Client) => (
-        <TableRowActions
-          actions={
-            !showArchived
-              ? [
-                  { key: "edit", label: t("common.edit"), onClick: () => openEdit(r) },
-                  {
-                    key: "archive",
-                    label: t("common.archive"),
-                    onClick: () => confirmArchive(r),
-                    danger: true,
-                  },
-                ]
-              : [
-                  { key: "restore", label: t("common.restore"), onClick: () => handleRestore(r.id) },
-                  {
-                    key: "delete",
-                    label: t("common.delete"),
-                    onClick: () => confirmDelete(r),
-                    danger: true,
-                  },
-                ]
-          }
-        />
+        <TableRowActions actions={actionsForClient(r)} />
       ),
     },
   ];
@@ -310,6 +315,62 @@ export function ClientsClient({ clients: initialClients, showArchived }: Props) 
           }
           dataSource={filtered}
           columns={columns}
+          mobileCard={(client) => (
+            <MobileRecordCard
+              eyebrow={client.legalName ?? t("clients.legalName")}
+              title={
+                showArchived ? (
+                  client.displayName
+                ) : (
+                  <LinkButton onClick={() => openEdit(client)}>
+                    {client.displayName}
+                  </LinkButton>
+                )
+              }
+              badge={
+                <Tag color={client.status === "ACTIVE" ? "green" : "default"}>
+                  {client.status === "ACTIVE"
+                    ? t("common.active")
+                    : t("common.archived")}
+                </Tag>
+              }
+              amount={
+                (client.billingModel ?? "FIXED") === "HOURLY" &&
+                client.hourlyRate
+                  ? formatCurrency(
+                      client.hourlyRate,
+                      client.hourlyCurrency ?? "EUR"
+                    )
+                  : t("clients.billingFixedShort")
+              }
+              amountLabel={
+                (client.billingModel ?? "FIXED") === "HOURLY"
+                  ? t("clients.hourlyRate")
+                  : t("clients.columnBilling")
+              }
+              details={[
+                {
+                  label: t("clients.taxId"),
+                  value: client.taxId ?? t("common.dash"),
+                },
+                {
+                  label: t("clients.country"),
+                  value: client.countryCode ?? t("common.dash"),
+                },
+                {
+                  label: t("clients.email"),
+                  value: client.email ?? t("common.dash"),
+                  fullWidth: true,
+                },
+              ]}
+              footer={
+                <>
+                  <Tag>{client.defaultCurrency ?? t("common.dash")}</Tag>
+                  <TableRowActions compact actions={actionsForClient(client)} />
+                </>
+              }
+            />
+          )}
           rowKey="id"
           loading={isPending}
           scroll={{ x: 1050 }}

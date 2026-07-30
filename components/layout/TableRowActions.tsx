@@ -15,6 +15,7 @@ export interface TableRowAction {
 
 interface Props {
   actions: TableRowAction[];
+  compact?: boolean;
 }
 
 function stopRowClick(e: MouseEvent) {
@@ -38,13 +39,21 @@ function renderActionButton(action: TableRowAction) {
   );
 }
 
-export function TableRowActions({ actions }: Props) {
+export function TableRowActions({ actions, compact = false }: Props) {
   const { t } = useLocale();
 
   if (actions.length === 0) return null;
 
-  const inlineActions = actions.length <= 2 ? actions : actions.slice(0, 2);
-  const overflowActions = actions.length <= 2 ? [] : actions.slice(2);
+  const inlineActions = compact
+    ? []
+    : actions.length <= 2
+      ? actions
+      : actions.slice(0, 2);
+  const overflowActions = compact
+    ? actions
+    : actions.length <= 2
+      ? []
+      : actions.slice(2);
 
   const overflowItems: MenuProps["items"] = [];
   overflowActions.forEach((action, index) => {

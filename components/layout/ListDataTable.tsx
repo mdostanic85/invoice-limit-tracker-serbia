@@ -1,15 +1,15 @@
 "use client";
 
 import { Input, Segmented, theme, Typography } from "antd";
-import type { TableProps } from "antd";
 import type { ReactNode } from "react";
 import { DataTable } from "./DataTable";
+import type { DataTableProps } from "./DataTable";
 import { PageToolbarGroup } from "./PageToolbar";
 
 const { Text } = Typography;
 
 export interface ListDataTableProps<RecordType extends object = object>
-  extends Omit<TableProps<RecordType>, "title" | "summary"> {
+  extends Omit<DataTableProps<RecordType>, "title" | "summary"> {
   /** Prominent context row above filters (e.g. year selector). */
   context?: ReactNode;
   /** Filter controls rendered as a secondary header attached to the table. */

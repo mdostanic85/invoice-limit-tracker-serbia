@@ -53,6 +53,7 @@ export const en: MessageTree = {
     disclaimer: "Disclaimer",
     light: "Light",
     dark: "Dark",
+    swipeTable: "Swipe the table left or right to see the remaining columns.",
   },
   nav: {
     dashboard: "Dashboard",

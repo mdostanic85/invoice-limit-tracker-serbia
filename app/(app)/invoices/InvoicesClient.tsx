@@ -18,13 +18,14 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { useFormat } from "@/lib/i18n/use-format";
 import { PageHeaderActions } from "@/components/layout/PageHeaderActions";
 import { PageStack } from "@/components/layout/PageStack";
+import { MobileRecordCard } from "@/components/layout/MobileRecordCard";
 import {
   ListDataTable,
   ListTableFilterBar,
   ListTableSearch,
   ListTableSummaryRow,
 } from "@/components/layout/ListDataTable";
-import { PrimaryButton, TextButton, LinkButton } from "@/components/layout/AppButton";
+import { PrimaryButton, LinkButton } from "@/components/layout/AppButton";
 import { TableRowActions } from "@/components/layout/TableRowActions";
 import { formatCurrency, formatDate, formatRate } from "@/lib/utils/format";
 import type { ColumnsType } from "antd/es/table";
@@ -240,6 +241,23 @@ export function InvoicesClient({
     });
   }
 
+  function actionsForInvoice(invoice: Invoice) {
+    return [
+      { key: "edit", label: t("common.edit"), onClick: () => openEdit(invoice) },
+      {
+        key: "duplicate",
+        label: t("common.duplicate"),
+        onClick: () => handleDuplicate(invoice),
+      },
+      {
+        key: "delete",
+        label: t("common.delete"),
+        onClick: () => handleDelete(invoice),
+        danger: true,
+      },
+    ];
+  }
+
   const columns: ColumnsType<Invoice> = [
     {
       title: t("invoices.columnNumber"),
@@ -388,13 +406,7 @@ export function InvoicesClient({
       width: 160,
       fixed: "right",
       render: (_: unknown, r: Invoice) => (
-        <TableRowActions
-          actions={[
-            { key: "edit", label: t("common.edit"), onClick: () => openEdit(r) },
-            { key: "duplicate", label: t("common.duplicate"), onClick: () => handleDuplicate(r) },
-            { key: "delete", label: t("common.delete"), onClick: () => handleDelete(r), danger: true },
-          ]}
-        />
+        <TableRowActions actions={actionsForInvoice(r)} />
       ),
     },
   ];
@@ -440,6 +452,65 @@ export function InvoicesClient({
         }
         dataSource={data?.invoices ?? []}
         columns={columns}
+        mobileCard={(invoice) => (
+          <MobileRecordCard
+            eyebrow={invoice.client?.displayName ?? t("common.dash")}
+            title={
+              <LinkButton onClick={() => openEdit(invoice)}>
+                {invoice.invoiceNumber}
+              </LinkButton>
+            }
+            badge={<InvoiceStatusTag status={invoice.status} />}
+            amount={formatCurrency(
+              invoice.originalAmount.toString(),
+              invoice.currency
+            )}
+            amountLabel={t("invoices.columnAmount")}
+            details={[
+              {
+                label: t("invoices.columnRsdAmount"),
+                value: (
+                  <Text strong className="amount-cell">
+                    {formatRsd(invoice.rsdAmount.toString())}
+                  </Text>
+                ),
+              },
+              {
+                label: t("invoices.columnIssueDate"),
+                value: formatDate(invoice.issueDate),
+              },
+              {
+                label: t("invoices.columnPaymentDate"),
+                value: formatDate(invoice.paymentDate) || t("common.dash"),
+              },
+              {
+                label: t("invoices.columnNbsRate"),
+                value: formatRate(invoice.appliedMiddleRate.toString(), 4),
+              },
+            ]}
+            footer={
+              <>
+                <span>
+                  <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                    {t("invoices.columnInLimit")}{" "}
+                  </Text>
+                  <Tag
+                    color={
+                      invoice.status !== "CANCELLED" && invoice.includeInLimit
+                        ? "green"
+                        : "default"
+                    }
+                  >
+                    {invoice.status !== "CANCELLED" && invoice.includeInLimit
+                      ? t("common.yes")
+                      : t("common.no")}
+                  </Tag>
+                </span>
+                <TableRowActions compact actions={actionsForInvoice(invoice)} />
+              </>
+            }
+          />
+        )}
         rowKey="id"
         loading={isPending}
         scroll={{ x: 1400 }}

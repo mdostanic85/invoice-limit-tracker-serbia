@@ -130,6 +130,7 @@ export function ClientFormFields({
                 rowKey="id"
                 pagination={false}
                 size="small"
+                mobileTableHint={t("common.swipeTable")}
                 columns={[
                   {
                     title: t("clients.ratePerHour"),

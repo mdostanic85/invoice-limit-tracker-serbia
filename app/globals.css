@@ -457,16 +457,27 @@ body {
   transition: width 0.2s;
 }
 
+.app-shell-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.app-shell-sider__menu {
+  flex: 1 1 auto;
+}
+
+.app-shell-sider__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ant-layout-sider {
     transition: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .app-content-inner {
-    padding: 12px !important;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
@@ -518,6 +529,167 @@ body {
   width: 100%;
   max-width: 100%;
   min-width: 0;
+}
+
+/* Mobile ledger cards — a readable alternative to shrinking wide tables. */
+.mobile-record-list {
+  width: 100%;
+  min-width: 0;
+}
+
+.mobile-record-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  background: var(--invoice-tracker-color-fill-alter);
+}
+
+.mobile-record-list__empty {
+  padding: 24px 12px;
+  background: var(--invoice-tracker-color-fill-alter);
+}
+
+.mobile-record-list__pagination {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  border-top: 1px solid var(--invoice-tracker-color-border-secondary);
+}
+
+.mobile-record-card {
+  overflow: hidden;
+}
+
+.mobile-record-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+}
+
+.mobile-record-card__identity {
+  min-width: 0;
+}
+
+.mobile-record-card__eyebrow {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.mobile-record-card__title {
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.mobile-record-card__title .ant-btn-link {
+  height: auto;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  text-align: start;
+  white-space: normal;
+}
+
+.mobile-record-card__badge {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.mobile-record-card__badge .ant-tag {
+  margin-inline-end: 0;
+}
+
+.mobile-record-card__amount-block {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 12px;
+  padding: 9px 10px;
+  border-radius: var(--invoice-tracker-border-radius-sm);
+}
+
+.mobile-record-card__amount-label {
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+
+.mobile-record-card__amount {
+  min-width: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+.mobile-record-card__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 12px;
+}
+
+.mobile-record-card__detail {
+  min-width: 0;
+}
+
+.mobile-record-card__detail--wide {
+  grid-column: 1 / -1;
+}
+
+.mobile-record-card__detail-label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+.mobile-record-card__detail-value {
+  min-width: 0;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.mobile-record-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 8px 6px 12px;
+}
+
+.mobile-record-card__footer .ant-tag {
+  margin-inline-end: 0;
+}
+
+.mobile-record-card__footer .ant-btn {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.mobile-scroll-table__hint {
+  padding: 8px 12px;
+  color: var(--invoice-tracker-color-text-secondary);
+  background: var(--invoice-tracker-color-fill-alter);
+  border-bottom: 1px solid var(--invoice-tracker-color-border-secondary);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 /* Filter / toolbar rows — same grid gap as bento */
@@ -640,12 +812,33 @@ body {
 /* ─── Mobile responsive (≤768px) ─────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  .app-shell-sider {
+    height: 100dvh !important;
+    transform: translateX(-100%) !important;
+  }
+
+  .app-shell-sider.app-shell-sider--mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  .app-shell-main {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
   .app-shell-header {
     padding-inline: 12px !important;
     gap: 8px;
     height: auto !important;
     min-height: 48px;
     flex-wrap: nowrap;
+    left: 0 !important;
+    width: 100% !important;
+  }
+
+  .app-shell-header .ant-btn {
+    min-width: 40px;
+    min-height: 40px;
   }
 
   .app-shell-header__start {
@@ -666,12 +859,16 @@ body {
     gap: 6px;
   }
 
+  .app-topbar-toolbar__theme {
+    display: none !important;
+  }
+
   .app-topbar-toolbar__divider {
     display: none;
   }
 
   .app-content-inner {
-    padding: 12px !important;
+    padding: calc(64px + env(safe-area-inset-top, 0px)) 12px 12px !important;
     padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
@@ -679,6 +876,11 @@ body {
     flex-direction: column;
     align-items: stretch !important;
     gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .page-content__header .ant-typography {
+    line-height: 1.25;
   }
 
   .page-content__header-extra {
@@ -805,6 +1007,7 @@ body {
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
   }
 
   .app-data-table .ant-table-thead > tr > th,
@@ -872,13 +1075,16 @@ body {
     max-height: calc(100dvh - 16px);
     overflow-y: auto;
   }
+
+  .ant-form-item .ant-input,
+  .ant-form-item .ant-input-number,
+  .ant-form-item .ant-picker,
+  .ant-form-item .ant-select-selector {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 480px) {
-  .app-topbar-toolbar__theme.ant-segmented {
-    display: none;
-  }
-
   .app-data-table .ant-table-thead > tr > th,
   .app-data-table .ant-table-tbody > tr > td {
     padding: 8px 10px;

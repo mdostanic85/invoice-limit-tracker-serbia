@@ -251,6 +251,7 @@ export function SettingsClient({ organization, limitHistory }: Props) {
                   <DataTable
                     dataSource={limitHistory}
                     columns={historyColumns}
+                    mobileTableHint={t("common.swipeTable")}
                     rowKey={(r) => r.changedAt.toString()}
                     pagination={false}
                   />
