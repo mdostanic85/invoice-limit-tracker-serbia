@@ -24,6 +24,15 @@ export default async function SettingsPage() {
         limitCurrency: getLimitCurrency(ctx.organization.countryCode),
         defaultReportingBasis: ctx.organization.defaultReportingBasis,
         preferredLocale: ctx.organization.preferredLocale,
+        issuerLegalName: ctx.organization.issuerLegalName,
+        issuerAddress: ctx.organization.issuerAddress,
+        issuerTaxId: ctx.organization.issuerTaxId,
+        issuerRegistrationNumber: ctx.organization.issuerRegistrationNumber,
+        issuerBankAccount: ctx.organization.issuerBankAccount,
+        issuerEmail: ctx.organization.issuerEmail,
+        issuerPhone: ctx.organization.issuerPhone,
+        invoicePdfTemplate: ctx.organization.invoicePdfTemplate,
+        logoUrl: ctx.organization.logoUrl,
       }}
       limitHistory={limitHistory.map((h) => ({
         previousValue: h.previousValue.toString(),

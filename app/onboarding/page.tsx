@@ -18,8 +18,10 @@ import {
 } from "@ant-design/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createOrganizationAction, acceptDisclaimerAction } from "@/app/actions/org-actions";
+import { uploadOrganizationLogoAction } from "@/app/actions/org-logo-actions";
 import { PrimaryButton, APP_CONTROL_SIZE } from "@/components/layout/AppButton";
 import { CountryLimitFormFields } from "@/components/domain/CountryLimitFormFields";
+import { OrganizationLogoUpload } from "@/components/domain/OrganizationLogoUpload";
 import { getCountryFormDefaults } from "@/lib/domain/country-tax-rules";
 import { LocaleProvider, useLocale } from "@/components/providers/LocaleProvider";
 
@@ -37,6 +39,7 @@ function OnboardingContent() {
   const [error, setError] = useState<string | null>(null);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
   const [orgData, setOrgData] = useState<Record<string, string> | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [form] = Form.useForm();
 
   const handleOrgSubmit = (values: Record<string, string>) => {
@@ -56,6 +59,17 @@ function OnboardingContent() {
             setError(typeof result.error === "string" ? result.error : t("onboarding.setupFailed"));
             setDisclaimerOpen(false);
             return;
+          }
+
+          if (logoFile) {
+            const logoFormData = new FormData();
+            logoFormData.append("file", logoFile);
+            const logoResult = await uploadOrganizationLogoAction(logoFormData);
+            if ("error" in logoResult && logoResult.error) {
+              setError(t("settings.logoUploadFailed"));
+              setDisclaimerOpen(false);
+              return;
+            }
           }
         }
 
@@ -131,6 +145,14 @@ function OnboardingContent() {
               </Form.Item>
 
               <CountryLimitFormFields form={form} />
+
+              <Form.Item label={t("onboarding.companyLogo")} extra={t("onboarding.logoOptionalHint")}>
+                <OrganizationLogoUpload
+                  autoUpload={false}
+                  pendingFile={logoFile}
+                  onPendingFileChange={setLogoFile}
+                />
+              </Form.Item>
 
               <Alert
                 type="info"
