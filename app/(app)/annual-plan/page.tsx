@@ -1,6 +1,11 @@
 import { getOrgContext } from "@/lib/auth/get-org-context";
-import { getProjection, getYtdInvoices } from "@/lib/services/limit-service";
-import { expandForecastOccurrences, type InvoiceSummary } from "@/lib/domain/limit-calculations";
+import { getYtdInvoices } from "@/lib/services/limit-service";
+import {
+  computeProjection,
+  expandForecastOccurrences,
+  type InvoiceSummary,
+} from "@/lib/domain/limit-calculations";
+import { getLimitCurrency } from "@/lib/domain/country-tax-rules";
 import { prisma } from "@/lib/db/prisma";
 import { AnnualPlanClient } from "./AnnualPlanClient";
 
@@ -37,6 +42,7 @@ export default async function AnnualPlanPage({ searchParams }: PageProps) {
   // Compute projections for all 3 scenarios
   const scenarios = ["CONSERVATIVE", "EXPECTED", "OPTIMISTIC"] as const;
   const projections: Record<string, { projectedTotal: string; crossingMonth: string | null; forecastContribution: string }> = {};
+  const limitCurrency = getLimitCurrency(ctx.organization.countryCode);
 
   for (const s of scenarios) {
     const occurrences = forecastEntries
@@ -52,13 +58,14 @@ export default async function AnnualPlanPage({ searchParams }: PageProps) {
         )
       );
 
-    const proj = await getProjection(
-      ctx.organizationId,
-      year,
+    const proj = computeProjection(
+      invoices,
+      occurrences,
       ctx.organization.defaultReportingBasis,
+      year,
       ctx.organization.annualThresholdRsd.toString(),
       s,
-      ctx.organization.countryCode
+      limitCurrency
     );
 
     projections[s] = {
@@ -90,13 +97,16 @@ export default async function AnnualPlanPage({ searchParams }: PageProps) {
   }
 
   // Cumulative monthly totals
-  let cumulative = 0;
-  const cumulativeData = Object.entries(monthlyActuals)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([month, actual]) => {
-      cumulative += actual;
-      return { month, actual, cumulative };
-    });
+  const sortedMonthlyActuals = Object.entries(monthlyActuals).sort(([a], [b]) =>
+    a.localeCompare(b)
+  );
+  const cumulativeData = sortedMonthlyActuals.map(([month, actual], index) => ({
+    month,
+    actual,
+    cumulative: sortedMonthlyActuals
+      .slice(0, index + 1)
+      .reduce((total, [, monthlyActual]) => total + monthlyActual, 0),
+  }));
 
   return (
     <AnnualPlanClient

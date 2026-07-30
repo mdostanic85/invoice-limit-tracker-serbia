@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/db/prisma";
+import { getOrgContextSafe } from "@/lib/auth/get-org-context";
 import { AppShell } from "@/components/layout/AppShell";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
 
@@ -9,14 +8,10 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  const ctx = await getOrgContextSafe();
+  if (!ctx) redirect("/onboarding");
 
-  const org = await prisma.organization.findUnique({
-    where: { clerkUserId: userId },
-  });
-
-  if (!org) redirect("/onboarding");
+  const org = ctx.organization;
   if (!org.disclaimerAcceptedAt) redirect("/onboarding?step=disclaimer");
 
   return (

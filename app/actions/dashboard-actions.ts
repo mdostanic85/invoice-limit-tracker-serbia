@@ -15,46 +15,48 @@ export async function getDashboardAction(
   const selectedYear = year ?? new Date().getFullYear();
   const selectedScenario = scenario ?? "EXPECTED";
 
-  const dashData = await getDashboardData(
-    ctx.organizationId,
-    selectedYear,
-    ctx.organization.defaultReportingBasis,
-    ctx.organization.annualThresholdRsd.toString(),
-    selectedScenario,
-    ctx.organization.countryCode
-  );
-
-  // Recent 5 invoices
-  const recentInvoices = await prisma.invoice.findMany({
-    where: { organizationId: ctx.organizationId },
-    include: { client: { select: { displayName: true } } },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
-
-  // Upcoming forecast (next 5 active entries)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const upcomingForecast = await prisma.forecastEntry.findMany({
-    where: {
-      organizationId: ctx.organizationId,
-      status: "ACTIVE",
-      scenario: selectedScenario,
-      expectedDate: { gte: today },
-    },
-    include: { client: { select: { displayName: true } } },
-    orderBy: { expectedDate: "asc" },
-    take: 5,
-  });
+  const [dashData, recentInvoices, upcomingForecast, clients] =
+    await Promise.all([
+      getDashboardData(
+        ctx.organizationId,
+        selectedYear,
+        ctx.organization.defaultReportingBasis,
+        ctx.organization.annualThresholdRsd.toString(),
+        selectedScenario,
+        ctx.organization.countryCode
+      ),
+      prisma.invoice.findMany({
+        where: { organizationId: ctx.organizationId },
+        include: { client: { select: { displayName: true } } },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
+      prisma.forecastEntry.findMany({
+        where: {
+          organizationId: ctx.organizationId,
+          status: "ACTIVE",
+          scenario: selectedScenario,
+          expectedDate: { gte: today },
+        },
+        include: { client: { select: { displayName: true } } },
+        orderBy: { expectedDate: "asc" },
+        take: 5,
+      }),
+      prisma.client.findMany({
+        where: { organizationId: ctx.organizationId },
+        select: { id: true, displayName: true },
+      }),
+    ]);
 
-  // Client lookup map for client chart
-  const clientIds = dashData.clientData.map((c) => c.clientId);
-  const clients = await prisma.client.findMany({
-    where: { id: { in: clientIds } },
-    select: { id: true, displayName: true },
-  });
-  const clientMap = Object.fromEntries(clients.map((c: { id: string; displayName: string }) => [c.id, c.displayName]));
+  const clientMap = Object.fromEntries(
+    clients.map((c: { id: string; displayName: string }) => [
+      c.id,
+      c.displayName,
+    ])
+  );
 
   return {
     data: serializeForClient({

@@ -85,29 +85,31 @@ export async function getProjection(
   scenario: "CONSERVATIVE" | "EXPECTED" | "OPTIMISTIC",
   countryCode: string
 ): Promise<ProjectedCalculation> {
-  const invoices = await getYtdInvoices(organizationId, year);
   const limitCurrency = getLimitCurrency(countryCode);
 
-  const forecastEntries = await prisma.forecastEntry.findMany({
-    where: {
-      organizationId,
-      status: "ACTIVE",
-      scenario,
-    },
-    select: {
-      id: true,
-      clientId: true,
-      expectedDate: true,
-      originalAmount: true,
-      currency: true,
-      estimatedRsdAmount: true,
-      scenario: true,
-      recurrence: true,
-      recurrenceEndDate: true,
-      planningRateLabel: true,
-      status: true,
-    },
-  });
+  const [invoices, forecastEntries] = await Promise.all([
+    getYtdInvoices(organizationId, year),
+    prisma.forecastEntry.findMany({
+      where: {
+        organizationId,
+        status: "ACTIVE",
+        scenario,
+      },
+      select: {
+        id: true,
+        clientId: true,
+        expectedDate: true,
+        originalAmount: true,
+        currency: true,
+        estimatedRsdAmount: true,
+        scenario: true,
+        recurrence: true,
+        recurrenceEndDate: true,
+        planningRateLabel: true,
+        status: true,
+      },
+    }),
+  ]);
 
   const occurrences = forecastEntries.flatMap((f: typeof forecastEntries[0]) =>
     expandForecastOccurrences(
@@ -131,25 +133,27 @@ export async function getDashboardData(
   scenario: "CONSERVATIVE" | "EXPECTED" | "OPTIMISTIC",
   countryCode: string
 ) {
-  const invoices = await getYtdInvoices(organizationId, year);
   const limitCurrency = getLimitCurrency(countryCode);
 
-  const forecastEntries = await prisma.forecastEntry.findMany({
-    where: { organizationId, status: "ACTIVE", scenario },
-    select: {
-      id: true,
-      clientId: true,
-      expectedDate: true,
-      originalAmount: true,
-      currency: true,
-      estimatedRsdAmount: true,
-      scenario: true,
-      recurrence: true,
-      recurrenceEndDate: true,
-      planningRateLabel: true,
-      status: true,
-    },
-  });
+  const [invoices, forecastEntries] = await Promise.all([
+    getYtdInvoices(organizationId, year),
+    prisma.forecastEntry.findMany({
+      where: { organizationId, status: "ACTIVE", scenario },
+      select: {
+        id: true,
+        clientId: true,
+        expectedDate: true,
+        originalAmount: true,
+        currency: true,
+        estimatedRsdAmount: true,
+        scenario: true,
+        recurrence: true,
+        recurrenceEndDate: true,
+        planningRateLabel: true,
+        status: true,
+      },
+    }),
+  ]);
 
   const occurrences = forecastEntries.flatMap((f: typeof forecastEntries[0]) =>
     expandForecastOccurrences(

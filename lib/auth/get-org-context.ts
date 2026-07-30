@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db/prisma";
 import type { Organization } from "@prisma/client";
+import { cache } from "react";
 
 export interface OrgContext {
   userId: string;
@@ -13,7 +14,7 @@ export interface OrgContext {
  * Throws if unauthenticated or no organization exists.
  * Every server action and API route must call this first.
  */
-export async function getOrgContext(): Promise<OrgContext> {
+export const getOrgContext = cache(async (): Promise<OrgContext> => {
   const { userId } = await auth();
   if (!userId) {
     throw new Error("UNAUTHENTICATED");
@@ -32,16 +33,16 @@ export async function getOrgContext(): Promise<OrgContext> {
     organizationId: org.id,
     organization: org,
   };
-}
+});
 
 /**
  * Same as getOrgContext but returns null instead of throwing.
  * Use in layouts/middleware to check org existence without crashing.
  */
-export async function getOrgContextSafe(): Promise<OrgContext | null> {
+export const getOrgContextSafe = cache(async (): Promise<OrgContext | null> => {
   try {
     return await getOrgContext();
   } catch {
     return null;
   }
-}
+});

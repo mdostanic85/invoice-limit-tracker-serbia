@@ -14,7 +14,12 @@ function isPrismaClientReady(client: PrismaClientType): boolean {
 }
 
 function createPrismaClient(): PrismaClientType {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 5,
+    connectionTimeoutMillis: 5_000,
+    idleTimeoutMillis: 30_000,
+  });
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
@@ -26,7 +31,7 @@ function createPrismaClient(): PrismaClientType {
   });
 }
 
-function getPrismaClient(): PrismaClientType {
+function getDevelopmentPrismaClient(): PrismaClientType {
   const cached = globalForPrisma.prisma;
   if (cached && isPrismaClientReady(cached)) {
     return cached;
@@ -38,18 +43,11 @@ function getPrismaClient(): PrismaClientType {
   }
 
   const client = createPrismaClient();
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = client;
-  }
+  globalForPrisma.prisma = client;
   return client;
 }
 
-export const prisma: PrismaClientType = new Proxy({} as PrismaClientType, {
-  get(_target, prop, receiver) {
-    const client = getPrismaClient();
-    const value = Reflect.get(client, prop, client);
-    return typeof value === "function"
-      ? (value as (...args: unknown[]) => unknown).bind(client)
-      : value;
-  },
-});
+export const prisma: PrismaClientType =
+  process.env.NODE_ENV === "production"
+    ? createPrismaClient()
+    : getDevelopmentPrismaClient();
