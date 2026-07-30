@@ -394,7 +394,12 @@ export function DashboardClient({ data }: Props) {
       <BentoCell lg={7}>
           <Card className="widget-card" title={
               <Text style={{ fontSize: token.fontSizeSM }}>
-                {t("dashboard.monthlyRevenue", { year })}
+                {t(
+                  scenario === "EXPECTED"
+                    ? "dashboard.monthlyExpectedRevenue"
+                    : "dashboard.monthlyRevenue",
+                  { year }
+                )}
               </Text>
             }
           >

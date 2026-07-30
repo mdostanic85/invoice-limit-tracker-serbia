@@ -5,6 +5,7 @@ import {
   computeProjection,
   expandForecastOccurrences,
   groupByMonth,
+  groupDraftInvoicesByMonth,
   isEligible,
   wouldExceedLimit,
   getThresholdState,
@@ -213,6 +214,51 @@ describe("groupByMonth", () => {
     const jan = result.find((m) => m.month === "2026-01");
     expect(jan?.actual).toBe(0);
   });
+
+  it("adds draft invoices to their issue month only when Expected is requested", () => {
+    const invoices = [
+      makeInvoice({
+        id: "draft-1",
+        status: "DRAFT",
+        rsdAmount: "250000",
+        issueDate: new Date("2026-05-12"),
+      }),
+    ];
+
+    const actual = groupByMonth(invoices, "ISSUE_DATE", 2026);
+    const expected = groupByMonth(invoices, "ISSUE_DATE", 2026, "RSD", {
+      includeExpectedDrafts: true,
+    });
+
+    expect(actual.find((month) => month.month === "2026-05")?.actual).toBe(0);
+    expect(expected.find((month) => month.month === "2026-05")?.actual).toBe(
+      250000
+    );
+  });
+
+  it("groups draft invoices by issue month for the Expected plan", () => {
+    const result = groupDraftInvoicesByMonth(
+      [
+        makeInvoice({
+          id: "draft-1",
+          status: "DRAFT",
+          rsdAmount: "125000",
+          issueDate: new Date("2026-08-03"),
+        }),
+        makeInvoice({
+          id: "issued-1",
+          status: "ISSUED",
+          rsdAmount: "900000",
+          issueDate: new Date("2026-08-10"),
+        }),
+      ],
+      2026
+    );
+
+    expect(result.find((month) => month.month === "2026-08")?.draft).toBe(
+      125000
+    );
+  });
 });
 
 describe("computeProjection crossing month", () => {
@@ -243,5 +289,68 @@ describe("computeProjection crossing month", () => {
     );
     expect(result.crossingMonth).toBe("2026-02");
     expect(result.projectedTotal.toString()).toBe("6500000");
+  });
+
+  it("includes draft invoices only in the Expected projection", () => {
+    const invoices = [
+      makeInvoice({
+        id: "issued",
+        status: "ISSUED",
+        rsdAmount: "1000000",
+        issueDate: new Date("2026-01-15"),
+      }),
+      makeInvoice({
+        id: "draft",
+        status: "DRAFT",
+        rsdAmount: "400000",
+        issueDate: new Date("2026-04-15"),
+      }),
+    ];
+
+    const expected = computeProjection(
+      invoices,
+      [],
+      "ISSUE_DATE",
+      2026,
+      "6000000",
+      "EXPECTED"
+    );
+    const conservative = computeProjection(
+      invoices,
+      [],
+      "ISSUE_DATE",
+      2026,
+      "6000000",
+      "CONSERVATIVE"
+    );
+
+    expect(expected.actualTotal.toString()).toBe("1000000");
+    expect(expected.forecastContribution.toString()).toBe("400000");
+    expect(expected.projectedTotal.toString()).toBe("1400000");
+    expect(conservative.forecastContribution.toString()).toBe("0");
+    expect(conservative.projectedTotal.toString()).toBe("1000000");
+  });
+
+  it("uses the draft issue month in Expected even with payment-date reporting", () => {
+    const invoices = [
+      makeInvoice({
+        status: "DRAFT",
+        rsdAmount: "700000",
+        issueDate: new Date("2026-09-05"),
+        paymentDate: null,
+      }),
+    ];
+
+    const expected = computeProjection(
+      invoices,
+      [],
+      "PAYMENT_DATE",
+      2026,
+      "600000",
+      "EXPECTED"
+    );
+
+    expect(expected.projectedTotal.toString()).toBe("700000");
+    expect(expected.crossingMonth).toBe("2026-09");
   });
 });

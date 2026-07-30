@@ -281,6 +281,8 @@ export const en: MessageTree = {
     limitUsed: "Limit used",
     projected: "Projected year-end ({scenario})",
     monthlyRevenue: "Monthly invoiced revenue (RSD) — {year}",
+    monthlyExpectedRevenue:
+      "Monthly expected revenue with drafts (RSD) — {year}",
     revenueByClient: "Revenue by client (top 10)",
     cumulativeRevenue: "Cumulative actual revenue — {year} ({basis} basis)",
     recentInvoices: "Recent invoices",
@@ -329,6 +331,8 @@ export const en: MessageTree = {
     limitExceededAlert:
       "At least one scenario exceeds the annual limit. Reduce planned amounts for upcoming months.",
     convertedRsd: "≈ {amount} (rate {rate} {currency}, {date})",
+    draftInvoiceOnly: "Draft invoice: {amount}",
+    draftInvoiceIncluded: "Draft +{draft} · Expected total: {total}",
     stiltAutoHint:
       "{client} is auto-filled in Expected: previous month days × {rate} {currency}/h × 8 h.",
     stiltAutoTag: "Stilt · {days} d",

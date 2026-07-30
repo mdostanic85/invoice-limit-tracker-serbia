@@ -31,6 +31,9 @@ function redirectAfterInvoiceSave(returnPath: string | undefined, toast: Invoice
   const path = resolveInvoiceReturnPath(returnPath);
   revalidatePath("/invoices");
   revalidatePath("/reports");
+  revalidatePath("/dashboard");
+  revalidatePath("/forecast");
+  revalidatePath("/annual-plan");
   revalidatePath(path);
   redirect(`${path}?toast=${toast}`);
 }

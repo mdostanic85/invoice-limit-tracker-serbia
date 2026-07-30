@@ -14,6 +14,7 @@ import {
   computeProjection,
   expandForecastOccurrences,
   groupByMonth,
+  groupDraftInvoicesByMonth,
 } from "@/lib/domain/limit-calculations";
 import { getLimitCurrency } from "@/lib/domain/country-tax-rules";
 import {
@@ -515,6 +516,11 @@ export async function getForecastPageDataAction(year?: number) {
   ]);
 
   const monthlyActuals = groupByMonth(invoices, basis, selectedYear, limitCurrency);
+  const monthlyDrafts = groupDraftInvoicesByMonth(
+    invoices,
+    selectedYear,
+    limitCurrency
+  );
   const monthKeys = buildMonthKeys(selectedYear);
 
   const monthlyPlan: Record<
@@ -690,6 +696,7 @@ export async function getForecastPageDataAction(year?: number) {
         excludedCount: limitStatus.excludedCount,
       },
       monthlyActuals,
+      monthlyDrafts,
       monthlyPlan,
       exchangeRates,
       projections,

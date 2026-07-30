@@ -3,7 +3,7 @@ import { getYtdInvoices } from "@/lib/services/limit-service";
 import {
   computeProjection,
   expandForecastOccurrences,
-  type InvoiceSummary,
+  groupByMonth,
 } from "@/lib/domain/limit-calculations";
 import { getLimitCurrency } from "@/lib/domain/country-tax-rules";
 import { prisma } from "@/lib/db/prisma";
@@ -75,37 +75,19 @@ export default async function AnnualPlanPage({ searchParams }: PageProps) {
     };
   }
 
-  // Monthly data for chart
-  const monthlyActuals: Record<string, number> = {};
-  for (let m = 0; m < 12; m++) {
-    const key = `${year}-${String(m + 1).padStart(2, "0")}`;
-    monthlyActuals[key] = 0;
-  }
-  for (const inv of invoices as InvoiceSummary[]) {
-    if (inv.status === "DRAFT" || inv.status === "CANCELLED") continue;
-    if (!inv.includeInLimit) continue;
-    const d = new Date(
-      ctx.organization.defaultReportingBasis === "ISSUE_DATE"
-        ? inv.issueDate
-        : (inv.paymentDate ?? inv.issueDate)
-    );
-    if (d.getFullYear() !== year) continue;
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    if (key in monthlyActuals) {
-      monthlyActuals[key] += parseFloat(inv.rsdAmount);
-    }
-  }
-
-  // Cumulative monthly totals
-  const sortedMonthlyActuals = Object.entries(monthlyActuals).sort(([a], [b]) =>
-    a.localeCompare(b)
+  const monthlyTotals = groupByMonth(
+    invoices,
+    ctx.organization.defaultReportingBasis,
+    year,
+    limitCurrency,
+    { includeExpectedDrafts: scenario === "EXPECTED" }
   );
-  const cumulativeData = sortedMonthlyActuals.map(([month, actual], index) => ({
+  const cumulativeData = monthlyTotals.map(({ month, actual }, index) => ({
     month,
     actual,
-    cumulative: sortedMonthlyActuals
+    cumulative: monthlyTotals
       .slice(0, index + 1)
-      .reduce((total, [, monthlyActual]) => total + monthlyActual, 0),
+      .reduce((total, monthlyTotal) => total + monthlyTotal.actual, 0),
   }));
 
   return (

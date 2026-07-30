@@ -176,7 +176,9 @@ export async function getDashboardData(
     scenario,
     limitCurrency
   );
-  const monthlyData = groupByMonth(invoices, basis, year, limitCurrency);
+  const monthlyData = groupByMonth(invoices, basis, year, limitCurrency, {
+    includeExpectedDrafts: scenario === "EXPECTED",
+  });
   const clientData = groupByClient(invoices, basis, year, 10, limitCurrency);
 
   // Status summary counts

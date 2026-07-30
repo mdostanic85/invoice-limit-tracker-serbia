@@ -56,6 +56,12 @@ interface MonthlyActual {
   actual: number;
 }
 
+interface MonthlyDraft {
+  month: string;
+  label: string;
+  draft: number;
+}
+
 interface MonthlyPlanCell {
   originalAmount: string;
   currency: string;
@@ -104,6 +110,7 @@ export interface ForecastPageData {
     excludedCount: number;
   };
   monthlyActuals: MonthlyActual[];
+  monthlyDrafts: MonthlyDraft[];
   monthlyPlan: Record<ForecastScenario, Record<string, MonthlyPlanCell>>;
   exchangeRates: Record<string, ExchangeRateInfo>;
   projections: Record<ForecastScenario, ScenarioProjection>;
@@ -121,6 +128,7 @@ interface MonthRow {
   monthIndex: number;
   monthLabel: string;
   actual: number;
+  expectedDraft: number;
   isEditable: boolean;
   plans: Record<ForecastScenario, MonthlyPlanCell>;
 }
@@ -257,6 +265,9 @@ export function ForecastClient({ data }: Props) {
         monthIndex: index + 1,
         monthLabel: t(`annualPlan.monthLong.${String(index)}`),
         actual: month.actual,
+        expectedDraft:
+          data.monthlyDrafts.find((draft) => draft.month === month.month)
+            ?.draft ?? 0,
         isEditable: index + 1 >= data.editableFromMonth,
         plans: {
           CONSERVATIVE: data.monthlyPlan.CONSERVATIVE[month.month] ?? {
@@ -285,7 +296,13 @@ export function ForecastClient({ data }: Props) {
           },
         },
       })),
-    [data.monthlyActuals, data.monthlyPlan, data.editableFromMonth, t]
+    [
+      data.monthlyActuals,
+      data.monthlyDrafts,
+      data.monthlyPlan,
+      data.editableFromMonth,
+      t,
+    ]
   );
 
   const editableMonthKeys = useMemo(
@@ -403,7 +420,18 @@ export function ForecastClient({ data }: Props) {
   }
 
   function renderPlanCell(scenario: ForecastScenario, row: MonthRow) {
+    const expectedDraft = scenario === "EXPECTED" ? row.expectedDraft : 0;
+
     if (!row.isEditable) {
+      if (expectedDraft > 0) {
+        return (
+          <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+            {t("forecast.draftInvoiceOnly", {
+              amount: formatRsd(expectedDraft),
+            })}
+          </Text>
+        );
+      }
       return (
         <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
           {t("common.dash")}
@@ -469,6 +497,14 @@ export function ForecastClient({ data }: Props) {
                   currency: cell.currency,
                   date: rateInfo?.effectiveDate ?? t("common.dash"),
                 })}
+          </Text>
+        )}
+        {expectedDraft > 0 && (
+          <Text type="success" style={{ fontSize: 11, lineHeight: 1.3 }}>
+            {t("forecast.draftInvoiceIncluded", {
+              draft: formatRsd(expectedDraft),
+              total: formatRsd(rsdValue + expectedDraft),
+            })}
           </Text>
         )}
       </Flex>

@@ -53,6 +53,33 @@ export interface ProjectedCalculation extends LimitCalculation {
   crossingMonth: string | null; // "YYYY-MM" or null if not projected to cross
 }
 
+export interface MonthlyInvoiceTotal {
+  month: string;
+  label: string;
+  actual: number;
+}
+
+export interface MonthlyDraftInvoiceTotal {
+  month: string;
+  label: string;
+  draft: number;
+}
+
+const MONTH_LABELS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 /**
  * Determines if an invoice is eligible to count toward the annual limit.
  */
@@ -71,6 +98,21 @@ export function isEligible(
 
   const basisYear = new Date(basisDate).getFullYear();
   return basisYear === year;
+}
+
+/**
+ * Draft invoices are projections, not actual revenue. They count only toward
+ * the Expected scenario and always use their issue date as the expected month.
+ */
+export function isExpectedDraftEligible(
+  invoice: InvoiceSummary,
+  year: number
+): boolean {
+  return (
+    invoice.status === "DRAFT" &&
+    invoice.includeInLimit &&
+    new Date(invoice.issueDate).getFullYear() === year
+  );
 }
 
 /**
@@ -238,8 +280,23 @@ export function computeProjection(
     (sum, f) => sum.plus(new Decimal(getForecastLimitAmount(f, limitCurrency))),
     new Decimal(0)
   );
+  const draftInvoiceContribution =
+    scenario === "EXPECTED"
+      ? invoices.reduce(
+          (sum, invoice) =>
+            isExpectedDraftEligible(invoice, year)
+              ? sum.plus(
+                  new Decimal(getInvoiceLimitAmount(invoice, limitCurrency))
+                )
+              : sum,
+          new Decimal(0)
+        )
+      : new Decimal(0);
+  const expectedContribution = forecastContribution.plus(
+    draftInvoiceContribution
+  );
 
-  const projectedTotal = base.actualTotal.plus(forecastContribution);
+  const projectedTotal = base.actualTotal.plus(expectedContribution);
   const projectedRemaining = Decimal.max(
     thresholdDec.minus(projectedTotal),
     new Decimal(0)
@@ -255,7 +312,8 @@ export function computeProjection(
     basis,
     year,
     thresholdDec,
-    limitCurrency
+    limitCurrency,
+    scenario === "EXPECTED"
   );
 
   return {
@@ -264,7 +322,7 @@ export function computeProjection(
     projectedRemaining,
     projectedPercentUsed,
     projectedThresholdState: getThresholdState(projectedPercentUsed),
-    forecastContribution,
+    forecastContribution: expectedContribution,
     crossingMonth,
   };
 }
@@ -279,16 +337,21 @@ function computeCrossingMonth(
   basis: ReportingBasis,
   year: number,
   threshold: Decimal,
-  limitCurrency = "RSD"
+  limitCurrency = "RSD",
+  includeExpectedDrafts = false
 ): string | null {
   const monthTotals: Record<string, Decimal> = {};
 
   // Actuals
   for (const inv of invoices) {
-    if (inv.status === "DRAFT" || inv.status === "CANCELLED") continue;
-    if (!inv.includeInLimit) continue;
-    const basisDate =
-      basis === "ISSUE_DATE" ? inv.issueDate : inv.paymentDate;
+    const isExpectedDraft =
+      includeExpectedDrafts && isExpectedDraftEligible(inv, year);
+    if (!isExpectedDraft && !isEligible(inv, basis, year)) continue;
+    const basisDate = isExpectedDraft
+      ? inv.issueDate
+      : basis === "ISSUE_DATE"
+        ? inv.issueDate
+        : inv.paymentDate;
     if (!basisDate) continue;
     const d = new Date(basisDate);
     if (d.getFullYear() !== year) continue;
@@ -362,8 +425,9 @@ export function groupByMonth(
   invoices: InvoiceSummary[],
   basis: ReportingBasis,
   year: number,
-  limitCurrency = "RSD"
-): Array<{ month: string; label: string; actual: number }> {
+  limitCurrency = "RSD",
+  options: { includeExpectedDrafts?: boolean } = {}
+): MonthlyInvoiceTotal[] {
   const months: Record<string, Decimal> = {};
 
   for (let m = 0; m < 12; m++) {
@@ -372,9 +436,15 @@ export function groupByMonth(
   }
 
   for (const inv of invoices) {
-    if (!isEligible(inv, basis, year)) continue;
-    const basisDate =
-      basis === "ISSUE_DATE" ? inv.issueDate : inv.paymentDate;
+    const isExpectedDraft =
+      options.includeExpectedDrafts === true &&
+      isExpectedDraftEligible(inv, year);
+    if (!isExpectedDraft && !isEligible(inv, basis, year)) continue;
+    const basisDate = isExpectedDraft
+      ? inv.issueDate
+      : basis === "ISSUE_DATE"
+        ? inv.issueDate
+        : inv.paymentDate;
     if (!basisDate) continue;
     const d = new Date(basisDate);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -385,17 +455,44 @@ export function groupByMonth(
     }
   }
 
-  const monthLabels = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-  ];
-
   return Object.entries(months)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, total], idx) => ({
       month: key,
-      label: monthLabels[idx],
+      label: MONTH_LABELS[idx],
       actual: total.toNumber(),
+    }));
+}
+
+export function groupDraftInvoicesByMonth(
+  invoices: InvoiceSummary[],
+  year: number,
+  limitCurrency = "RSD"
+): MonthlyDraftInvoiceTotal[] {
+  const months: Record<string, Decimal> = {};
+
+  for (let month = 0; month < 12; month++) {
+    const key = `${year}-${String(month + 1).padStart(2, "0")}`;
+    months[key] = new Decimal(0);
+  }
+
+  for (const invoice of invoices) {
+    if (!isExpectedDraftEligible(invoice, year)) continue;
+    const issueDate = new Date(invoice.issueDate);
+    const key = `${issueDate.getFullYear()}-${String(
+      issueDate.getMonth() + 1
+    ).padStart(2, "0")}`;
+    months[key] = months[key].plus(
+      new Decimal(getInvoiceLimitAmount(invoice, limitCurrency))
+    );
+  }
+
+  return Object.entries(months)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, total], index) => ({
+      month,
+      label: MONTH_LABELS[index],
+      draft: total.toNumber(),
     }));
 }
 

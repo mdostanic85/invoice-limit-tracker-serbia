@@ -281,6 +281,7 @@ export const sr: MessageTree = {
     limitUsed: "Iskorišćen limit",
     projected: "Projekcija na kraju godine ({scenario})",
     monthlyRevenue: "Mesečni prihod (RSD) — {year}",
+    monthlyExpectedRevenue: "Mesečni očekivani prihod sa nacrtima (RSD) — {year}",
     revenueByClient: "Prihod po klijentu (top 10)",
     cumulativeRevenue: "Kumulativni prihod — {year} (osnova: {basis})",
     recentInvoices: "Skorašnje fakture",
@@ -329,6 +330,8 @@ export const sr: MessageTree = {
     limitExceededAlert:
       "Bar jedan scenario prelazi godišnji limit. Smanjite planirane iznose za naredne mesece.",
     convertedRsd: "≈ {amount} (kurs {rate} {currency}, {date})",
+    draftInvoiceOnly: "Nacrt fakture: {amount}",
+    draftInvoiceIncluded: "Nacrt +{draft} · Očekivano ukupno: {total}",
     stiltAutoHint:
       "{client} se automatski unosi u Očekivano: broj dana u prethodnom mesecu × {rate} {currency}/h × 8 h.",
     stiltAutoTag: "Stilt · {days} d",
