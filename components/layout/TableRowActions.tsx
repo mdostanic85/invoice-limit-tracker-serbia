@@ -60,7 +60,7 @@ export function TableRowActions({ actions }: Props) {
   });
 
   return (
-    <Space separator={<Divider type="vertical" />} size={4}>
+    <Space separator={<Divider orientation="vertical" />} size={4}>
       {inlineActions.map(renderActionButton)}
       {overflowActions.length > 0 && (
         <Dropdown menu={{ items: overflowItems }} trigger={["click"]}>

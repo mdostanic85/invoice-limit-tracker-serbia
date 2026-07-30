@@ -45,6 +45,8 @@ const NAV_LABEL_KEYS: Record<(typeof NAV_KEYS)[number]["key"], string> = {
   "/settings": "nav.settings",
 };
 
+const HEADER_HEIGHT = 48;
+
 interface Props {
   children: React.ReactNode;
   orgName?: string;
@@ -83,6 +85,8 @@ export function AppShell({ children, orgName }: Props) {
   }));
 
   const contentMarginLeft = mobile ? 0 : collapsed ? 64 : 220;
+  const headerTopOffset = "env(safe-area-inset-top, 0px)";
+  const headerTotalHeight = `calc(${HEADER_HEIGHT}px + ${headerTopOffset})`;
 
   function toggleNav() {
     if (mobile) setMobileNavOpen((open) => !open);
@@ -199,15 +203,19 @@ export function AppShell({ children, orgName }: Props) {
             backgroundColor: token.colorBgContainer,
             borderBottom: `1px solid ${token.colorBorderSecondary}`,
             padding: `0 ${token.paddingMD}px`,
-            paddingTop: "env(safe-area-inset-top, 0px)",
-            height: 48,
+            paddingTop: headerTopOffset,
+            height: headerTotalHeight,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            position: "sticky",
+            position: "fixed",
             top: 0,
+            right: 0,
+            left: contentMarginLeft,
+            width: `calc(100% - ${contentMarginLeft}px)`,
             zIndex: 99,
             minWidth: 0,
+            transition: "left 0.2s, width 0.2s",
           }}
         >
           <Flex
@@ -243,7 +251,8 @@ export function AppShell({ children, orgName }: Props) {
           className="app-content-inner"
           style={{
             padding: token.paddingMD,
-            minHeight: "calc(100vh - 48px)",
+            paddingTop: `calc(${token.paddingMD}px + ${headerTotalHeight})`,
+            minHeight: `calc(100vh - ${headerTotalHeight})`,
             background: token.colorBgLayout,
           }}
         >
