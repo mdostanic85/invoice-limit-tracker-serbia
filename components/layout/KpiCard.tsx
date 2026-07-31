@@ -66,13 +66,13 @@ export function DashboardKpiStat({
       }}
     >
       <div style={{ display: "flex", alignItems: "flex-start", gap: token.marginXS }}>
-        <Text type="secondary" style={{ fontSize: token.fontSizeSM, lineHeight: 1.4, flex: 1 }}>
+        <Text type="secondary" style={{ fontSize: token.fontSizeLG, lineHeight: 1.4, flex: 1 }}>
           {title}
         </Text>
         {hint && (
           <Tooltip title={hint} placement="topLeft">
             <InfoCircleOutlined
-              style={{ color: token.colorTextTertiary, fontSize: 12, marginTop: 2, flexShrink: 0 }}
+              style={{ color: token.colorTextTertiary, fontSize: token.fontSizeLG, marginTop: 2, flexShrink: 0 }}
               aria-label={hint}
             />
           </Tooltip>
@@ -89,10 +89,12 @@ export function DashboardKpiStat({
       >
         <Text
           style={{
-            fontSize: token.fontSizeHeading4,
+            fontSize: "clamp(1.625rem, 2.4vw, 2rem)",
             fontWeight: 700,
             color: valueColor ?? token.colorText,
-            lineHeight: 1.15,
+            lineHeight: 1.1,
+            letterSpacing: "-0.025em",
+            fontVariantNumeric: "tabular-nums",
             wordBreak: "break-word",
             overflowWrap: "anywhere",
             ...valueStyle,
@@ -103,9 +105,9 @@ export function DashboardKpiStat({
         </Text>
       </div>
 
-      <div style={{ minHeight: token.fontSizeSM * 1.5 }}>
+      <div style={{ minHeight: token.fontSizeLG * 1.5, fontSize: token.fontSizeLG }}>
         {footer ?? (
-          <Text type="secondary" style={{ fontSize: token.fontSizeSM, visibility: "hidden" }}>
+          <Text type="secondary" style={{ fontSize: token.fontSizeLG, visibility: "hidden" }}>
             —
           </Text>
         )}

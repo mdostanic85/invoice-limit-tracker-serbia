@@ -11,8 +11,8 @@ export const layoutSpacing = {
 } as const;
 
 export const layoutCssVars = {
-  grid: "--invoice-tracker-space-grid",
-  stack: "--invoice-tracker-space-stack",
-  inline: "--invoice-tracker-space-inline",
-  dense: "--invoice-tracker-space-dense",
+  grid: "--limitradar-space-grid",
+  stack: "--limitradar-space-stack",
+  inline: "--limitradar-space-inline",
+  dense: "--limitradar-space-dense",
 } as const;

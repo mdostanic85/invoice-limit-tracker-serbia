@@ -216,10 +216,10 @@ export function DashboardClient({ data }: Props) {
       <PageFilterPanel
         meta={
           <>
-            <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+            <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
               {t("dashboard.basisMeta", { basis: basisLabel })}
             </Text>
-            <TextLink href="/settings" style={{ fontSize: token.fontSizeSM }}>
+            <TextLink href="/settings" style={{ fontSize: token.fontSizeLG }}>
               <SettingOutlined aria-hidden="true" /> {t("dashboard.changeInSettings")}
             </TextLink>
           </>
@@ -272,7 +272,7 @@ export function DashboardClient({ data }: Props) {
               hint={t("dashboard.kpiInvoicedHint")}
               value={formatRsd(limitStatus.actualTotal)}
               footer={
-                <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
                   {t("dashboard.percentOfLimit", {
                     percent: limitStatus.percentUsed.toFixed(1),
                     currency: formatRsd(limitStatus.threshold),
@@ -294,7 +294,7 @@ export function DashboardClient({ data }: Props) {
                   : token.colorSuccess
               }
               footer={
-                <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
                   {t("dashboard.annualLimit")} {formatRsd(limitStatus.threshold)}
                 </Text>
               }
@@ -315,12 +315,12 @@ export function DashboardClient({ data }: Props) {
               }}
             >
               <div style={{ display: "flex", alignItems: "flex-start", gap: token.marginXS }}>
-                <Text type="secondary" style={{ fontSize: token.fontSizeSM, lineHeight: 1.4, flex: 1 }}>
+                <Text type="secondary" style={{ fontSize: token.fontSizeLG, lineHeight: 1.4, flex: 1 }}>
                   {t("dashboard.limitUsed")}
                 </Text>
                 <Tooltip title={t("dashboard.kpiLimitUsedHint")} placement="topLeft">
                   <InfoCircleOutlined
-                    style={{ color: token.colorTextTertiary, fontSize: 12, marginTop: 2 }}
+                    style={{ color: token.colorTextTertiary, fontSize: token.fontSizeLG, marginTop: 2 }}
                     aria-label={t("dashboard.kpiLimitUsedHint")}
                   />
                 </Tooltip>
@@ -345,7 +345,7 @@ export function DashboardClient({ data }: Props) {
                   strokeWidth={12}
                 />
               </div>
-              <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+              <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
                 {t("dashboard.percentOfLimit", {
                   percent: limitStatus.percentUsed.toFixed(1),
                   currency: formatRsd(limitStatus.threshold),
@@ -369,17 +369,17 @@ export function DashboardClient({ data }: Props) {
               }
               footer={
                 projection.crossingMonth ? (
-                  <Text type="warning" style={{ fontSize: token.fontSizeSM }}>
+                  <Text type="warning" style={{ fontSize: token.fontSizeLG }}>
                     {t("dashboard.crossesLimit")} {projection.crossingMonth}
                   </Text>
                 ) : parseFloat(projection.forecastContribution) > 0 ? (
-                  <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                  <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
                     {t("dashboard.fromForecast", {
                       amount: formatRsd(projection.forecastContribution),
                     })}
                   </Text>
                 ) : (
-                  <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                  <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
                     {t("dashboard.percentOfLimit", {
                       percent: projection.projectedPercentUsed.toFixed(1),
                       currency: formatRsd(limitStatus.threshold),
@@ -393,7 +393,7 @@ export function DashboardClient({ data }: Props) {
 
       <BentoCell lg={7}>
           <Card className="widget-card" title={
-              <Text style={{ fontSize: token.fontSizeSM }}>
+              <Text style={{ fontSize: token.fontSizeLG }}>
                 {t(
                   scenario === "EXPECTED"
                     ? "dashboard.monthlyExpectedRevenue"
@@ -409,7 +409,7 @@ export function DashboardClient({ data }: Props) {
 
       <BentoCell lg={5}>
           <Card className="widget-card" title={
-              <Text style={{ fontSize: token.fontSizeSM }}>
+              <Text style={{ fontSize: token.fontSizeLG }}>
                 {t("dashboard.revenueByClient")}
               </Text>
             }
@@ -423,7 +423,7 @@ export function DashboardClient({ data }: Props) {
       </BentoCell>
 
       <BentoCell lg={6}>
-          <Card className="widget-card" title={<Text style={{ fontSize: token.fontSizeSM }}>{t("dashboard.recentInvoices")}</Text>}
+          <Card className="widget-card" title={<Text style={{ fontSize: token.fontSizeLG }}>{t("dashboard.recentInvoices")}</Text>}
             extra={
               <LinkButton onClick={() => router.push("/invoices")}>
                 {t("dashboard.viewAll")}
@@ -456,7 +456,7 @@ export function DashboardClient({ data }: Props) {
       </BentoCell>
 
       <BentoCell lg={6}>
-          <Card className="widget-card" title={<Text style={{ fontSize: token.fontSizeSM }}>{t("dashboard.upcomingForecast")}</Text>}
+          <Card className="widget-card" title={<Text style={{ fontSize: token.fontSizeLG }}>{t("dashboard.upcomingForecast")}</Text>}
             extra={
               <LinkButton onClick={() => router.push("/forecast")}>
                 {t("dashboard.viewAll")}
@@ -497,13 +497,13 @@ export function DashboardClient({ data }: Props) {
       <BentoCell span={12}>
       <Card>
         <Space wrap>
-          <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+          <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
             {t("dashboard.invoiceStatus")}
           </Text>
           {Object.entries(data.statusCounts).map(([status, count]) => (
             <Space key={status} size={token.marginXS}>
               <InvoiceStatusTag status={status} />
-              <Text style={{ fontSize: token.fontSizeSM }}>{count}</Text>
+              <Text style={{ fontSize: token.fontSizeLG }}>{count}</Text>
             </Space>
           ))}
         </Space>

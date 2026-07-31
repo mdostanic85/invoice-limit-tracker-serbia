@@ -20,7 +20,7 @@ export const clerkSrLatin = {
       formSubtitle:
         "Koristite vezu za verifikaciju poslatu na vašu e-mail adresu",
       resendButton: "Niste primili vezu? Pošalji ponovo",
-      subtitle: "da nastavite na {{applicationName}}",
+      subtitle: "da nastavite na LimitRadar",
       title: "Proverite svoju e-mail adresu",
     },
   },

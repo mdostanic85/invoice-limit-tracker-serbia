@@ -1,8 +1,8 @@
-# Invoice Limit Tracker Serbia
+# LimitRadar
 
 A desktop-first SaaS workspace for Serbian entrepreneurs and small agencies who need to track issued invoices, monitor annual revenue against a configurable RSD threshold, and plan future billing with confidence.
 
-**Live demo:** https://invoice-limit-tracker-serbia.vercel.app
+**Live demo:** https://limitradar.vercel.app
 
 **Repository:** https://github.com/mdostanic85/invoice-limit-tracker-serbia
 
@@ -239,8 +239,9 @@ prisma/
 
 ## License
 
-MIT — use as a portfolio reference or starting point.
+LimitRadar is available under the [MIT License](LICENSE). See
+[OWNERSHIP.md](OWNERSHIP.md) for project ownership and brand information.
 
 ---
 
-Built by **Milos Dostanic** · Belgrade, Serbia
+Built and maintained by [**Miloš Dostanić**](https://github.com/mdostanic85) · Belgrade, Serbia

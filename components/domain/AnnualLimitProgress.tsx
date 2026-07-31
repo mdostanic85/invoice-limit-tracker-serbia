@@ -50,7 +50,7 @@ export function AnnualLimitProgress({
             style={{
               color: progressColor,
               fontWeight: 600,
-              fontSize: token.fontSizeSM,
+              fontSize: token.fontSizeLG,
             }}
           >
             {formatPercent(percentUsed, 1)}
@@ -68,14 +68,18 @@ export function AnnualLimitProgress({
           <Statistic
             title={t("domain.invoicedYtd")}
             value={formatRsd(actualTotal)}
-            styles={{ content: { fontSize: token.fontSizeSM, color: token.colorText } }}
+            styles={{
+              title: { fontSize: token.fontSizeLG },
+              content: { fontSize: token.fontSizeLG, color: token.colorText },
+            }}
           />
           <Statistic
             title={t("domain.remaining")}
             value={formatRsd(remaining)}
             styles={{
+              title: { fontSize: token.fontSizeLG },
               content: {
-                fontSize: token.fontSizeSM,
+                fontSize: token.fontSizeLG,
                 color:
                   parseFloat(remaining) === 0
                     ? token.colorError
@@ -86,7 +90,10 @@ export function AnnualLimitProgress({
           <Statistic
             title={t("domain.annualLimit")}
             value={formatRsd(threshold)}
-            styles={{ content: { fontSize: token.fontSizeSM, color: token.colorTextSecondary } }}
+            styles={{
+              title: { fontSize: token.fontSizeLG },
+              content: { fontSize: token.fontSizeLG, color: token.colorTextSecondary },
+            }}
           />
         </div>
       )}

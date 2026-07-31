@@ -63,7 +63,7 @@ export function InvoiceImpactPreview({
           thresholdState={thresholdState}
           showStats={false}
         />
-        <Text type="secondary" style={{ fontSize: token.fontSizeSM, display: "block", marginTop: token.marginXS }}>
+        <Text type="secondary" style={{ fontSize: token.fontSizeLG, display: "block", marginTop: token.marginXS }}>
           {formatRsd(current)} + {formatRsd(newAmt)} = {formatRsd(newTotal)}
           {" · "}
           {t("domain.percentLimitUsed", {
@@ -79,7 +79,7 @@ export function InvoiceImpactPreview({
   return (
     <Card
       title={
-        <Text style={{ fontSize: token.fontSizeSM }}>
+        <Text style={{ fontSize: token.fontSizeLG }}>
           {t("domain.limitImpact", { basis: basisLabel, year: String(year) })}
         </Text>
       }
@@ -106,7 +106,10 @@ export function InvoiceImpactPreview({
           <Statistic
             title={t("domain.currentYtd")}
             value={formatRsd(current)}
-            styles={{ content: { fontSize: token.fontSizeSM } }}
+            styles={{
+              title: { fontSize: token.fontSizeLG },
+              content: { fontSize: "1.25rem" },
+            }}
           />
         </BentoCell>
         <BentoCell lg={4}>
@@ -114,8 +117,9 @@ export function InvoiceImpactPreview({
             title={t("domain.thisInvoice")}
             value={formatRsd(newAmt)}
             styles={{
+              title: { fontSize: token.fontSizeLG },
               content: {
-                fontSize: token.fontSizeSM,
+                fontSize: "1.25rem",
                 color: token.colorPrimary,
               },
             }}
@@ -126,8 +130,9 @@ export function InvoiceImpactPreview({
             title={t("domain.newTotal")}
             value={formatRsd(newTotal)}
             styles={{
+              title: { fontSize: token.fontSizeLG },
               content: {
-                fontSize: token.fontSizeSM,
+                fontSize: "1.25rem",
                 color: exceeds ? token.colorError : token.colorText,
                 fontWeight: 600,
               },
@@ -147,7 +152,7 @@ export function InvoiceImpactPreview({
         showStats={false}
       />
 
-      <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+      <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
         {t("domain.percentLimitUsed", {
           percent: formatPercent(percentUsed, 1),
           threshold: formatRsd(thresh),

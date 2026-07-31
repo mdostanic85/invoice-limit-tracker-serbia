@@ -98,7 +98,7 @@ export function AnnualPlanClient({
       <BentoCell span={12}>
         <PageFilterPanel
           meta={
-            <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+            <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
               {t("annualPlan.basisMeta", { basis: basisLabel })}
             </Text>
           }
@@ -163,18 +163,24 @@ export function AnnualPlanClient({
                   <Statistic
                     title={t("annualPlan.projectedTotal")}
                     value={formatRsd(data.projectedTotal)}
-                    styles={{ content: {
-                      fontSize: token.fontSizeSM,
-                      color: exceeds ? token.colorError : token.colorText,
-                    } }}
+                    styles={{
+                      title: { fontSize: token.fontSizeLG },
+                      content: {
+                        fontSize: "1.25rem",
+                        color: exceeds ? token.colorError : token.colorText,
+                      },
+                    }}
                   />
                   <Statistic
                     title={t("annualPlan.forecastContribution")}
                     value={formatRsd(data.forecastContribution)}
-                    styles={{ content: {  fontSize: token.fontSizeSM  } }}
+                    styles={{
+                      title: { fontSize: token.fontSizeLG },
+                      content: { fontSize: "1.25rem" },
+                    }}
                   />
                   <div>
-                    <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                    <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
                       {rem > 0
                         ? t("annualPlan.percentUsed", {
                             percent: formatPercent(pct, 1),
@@ -186,7 +192,7 @@ export function AnnualPlanClient({
                     </Text>
                   </div>
                   {data.crossingMonth && (
-                    <Text style={{ fontSize: token.fontSizeSM, color: token.colorWarning }}>
+                    <Text style={{ fontSize: token.fontSizeLG, color: token.colorWarning }}>
                       {t("annualPlan.crossing")}{" "}
                       {data.crossingMonth.split("-").reverse().slice(0, 2).join("/")}
                     </Text>
@@ -201,7 +207,7 @@ export function AnnualPlanClient({
       <Card
         className="widget-card"
         title={
-          <Text style={{ fontSize: token.fontSizeSM }}>
+          <Text style={{ fontSize: token.fontSizeLG }}>
             {t("annualPlan.chartTitle", { year: String(year), basis: basisLabel })}
           </Text>
         }
@@ -224,7 +230,10 @@ export function AnnualPlanClient({
             <Statistic
               title={t("annualPlan.remainingActual")}
               value={formatRsd(Math.max(thresholdValue - (thresholdValue - parseFloat(projections.EXPECTED.projectedTotal) - parseFloat(projections.EXPECTED.forecastContribution)), 0))}
-              styles={{ content: {  fontSize: token.fontSizeSM  } }}
+              styles={{
+                title: { fontSize: token.fontSizeLG },
+                content: { fontSize: "1.25rem" },
+              }}
             />
           </BentoCell>
           <BentoCell lg={4}>
@@ -233,22 +242,28 @@ export function AnnualPlanClient({
                 scenario: forecastScenarioLabel(t, selectedScenario),
               })}
               value={formatRsd(remaining)}
-              styles={{ content: {
-                fontSize: token.fontSizeSM,
-                color: remaining === 0 ? token.colorError : token.colorSuccess,
-              } }}
+              styles={{
+                title: { fontSize: token.fontSizeLG },
+                content: {
+                  fontSize: "1.25rem",
+                  color: remaining === 0 ? token.colorError : token.colorSuccess,
+                },
+              }}
             />
           </BentoCell>
           <BentoCell lg={4}>
             <Statistic
               title={t("annualPlan.annualThreshold")}
               value={formatRsd(threshold)}
-              styles={{ content: {  fontSize: token.fontSizeSM  } }}
+              styles={{
+                title: { fontSize: token.fontSizeLG },
+                content: { fontSize: "1.25rem" },
+              }}
             />
           </BentoCell>
         </BentoGrid>
         <Divider style={{ margin: `${token.marginSM}px 0` }} />
-        <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+        <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
           {t("annualPlan.footer")}{" "}
           {t("annualPlan.footerBasis", { basis: basisLabel, year: String(year) })}
         </Text>

@@ -10,6 +10,7 @@ import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 import { Spin } from "antd";
 import type { ReactNode } from "react";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 interface AuthLayoutProps {
   eyebrow: string;
@@ -28,16 +29,10 @@ function AuthLayoutInner({
     <div className="auth-shell">
       <section
         className="auth-shell__story"
-        aria-label="Pregled aplikacije za praćenje faktura"
+        aria-label="Pregled aplikacije LimitRadar"
       >
         <div className="auth-shell__brand">
-          <span className="auth-shell__brand-mark" aria-hidden>
-            <BarChartOutlined />
-          </span>
-          <span>
-            <strong>Praćenje faktura</strong>
-            <small>Srbija</small>
-          </span>
+          <BrandLogo className="auth-shell__brand-logo" />
         </div>
 
         <div className="auth-shell__story-copy">

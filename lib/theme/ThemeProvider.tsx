@@ -79,7 +79,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         componentSize="large"
         theme={{
           ...themeConfig,
-          cssVar: { key: "invoice-tracker" },
+          cssVar: { key: "limitradar" },
           hashed: false,
         }}
       >

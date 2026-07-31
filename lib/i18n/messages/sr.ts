@@ -70,13 +70,14 @@ export const sr: MessageTree = {
     export: "Izvezi",
   },
   layout: {
-    appName: "Praćenje faktura",
+    appName: "LimitRadar",
     countryFallback: "Srbija",
-    pageTitle: "Praćenje limita faktura Srbija",
+    pageTitle: "LimitRadar",
     pageDescription:
-      "Pratite fakturisani prihod u RSD, nadzirite godišnji prag i planirajte buduće naplate — za preduzetnike i agencije u Srbiji.",
+      "LimitRadar prati fakturisani prihod u RSD, nadzire godišnji prag i pomaže vam da planirate buduće naplate.",
     legalFooter:
-      "Praćenje limita faktura Srbija je isključivo informativni alat za planiranje. Ne predstavlja računovodstveni, poreski ili pravni savet. Kursne liste preuzimaju se sa zvanične NBS srednje liste za potrebe planiranja.",
+      "LimitRadar je isključivo informativni alat za planiranje. Ne predstavlja računovodstveni, poreski ili pravni savet. Kursne liste preuzimaju se sa zvanične NBS srednje liste za potrebe planiranja.",
+    createdBy: "Napravio",
   },
   status: {
     invoice: {
@@ -529,7 +530,7 @@ export const sr: MessageTree = {
     placeholderRateLabel: "npr. Budžetski kurs 2026",
   },
   onboarding: {
-    title: "Praćenje limita faktura Srbija",
+    title: "LimitRadar",
     subtitle: "Podesite radni prostor za manje od minuta",
     stepOrg: "Organizacija",
     stepDisclaimer: "Odricanje",
@@ -593,7 +594,7 @@ export const sr: MessageTree = {
     selectTaxCategory: "Izaberite poresku kategoriju",
     regimeAlert: "Samo informativno — nije pravni ili poreski savet.",
     effectiveFrom: "Važi od",
-    authTitle: "Praćenje limita faktura Srbija",
+    authTitle: "LimitRadar",
     thresholdExceededTitle: "Godišnji limit prekoračen — {year} (osnova: {basis})",
     thresholdExceededBody:
       "Fakturisali ste {actual}, što premašuje godišnji limit od {threshold} ({percent} iskorišćeno). Pregledajte otkazane fakture ili prilagodite limit.",

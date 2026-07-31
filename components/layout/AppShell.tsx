@@ -1,14 +1,13 @@
 "use client";
 
 import React, { Suspense, useState, useEffect } from "react";
-import { Layout, Menu, Typography, Avatar, theme, Flex } from "antd";
+import { Layout, Menu, Typography, theme, Flex } from "antd";
 import {
   DashboardOutlined,
   FileTextOutlined,
   TeamOutlined,
   LineChartOutlined,
   CalendarOutlined,
-  BarChartOutlined,
   AuditOutlined,
   SettingOutlined,
   MenuFoldOutlined,
@@ -19,10 +18,11 @@ import { TopBarToolbar } from "@/components/layout/TopBarToolbar";
 import { TopBarYearSelect } from "@/components/layout/TopBarYearSelect";
 import { TextButton } from "@/components/layout/AppButton";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 const { Sider, Content, Header } = Layout;
-const { Text } = Typography;
+const { Link, Text } = Typography;
 const { useToken } = theme;
 
 const NAV_KEYS = [
@@ -144,7 +144,7 @@ export function AppShell({ children, orgName }: Props) {
           style={{
             padding: navCollapsed
               ? `${token.paddingMD}px ${token.paddingSM}px`
-              : token.paddingMD,
+              : `9px ${token.paddingMD}px`,
             borderBottom: `1px solid ${token.colorBorderSecondary}`,
             display: "flex",
             alignItems: "center",
@@ -152,31 +152,17 @@ export function AppShell({ children, orgName }: Props) {
             overflow: "hidden",
           }}
         >
-          <Avatar
-            style={{ backgroundColor: token.colorPrimary, flexShrink: 0 }}
-            icon={<BarChartOutlined />}
-          />
-          {!navCollapsed && (
-            <Text
-              style={{
-                flex: 1,
-                fontWeight: 700,
-                fontSize: token.fontSizeSM,
-                lineHeight: 1.2,
-                color: token.colorText,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {t("layout.appName")}
-              <br />
+          <div className="app-shell-sider__brand-identity">
+            <BrandLogo compact={navCollapsed} />
+            {!navCollapsed && (
               <Text
                 type="secondary"
-                style={{ fontSize: 11, fontWeight: 400 }}
+                className="app-shell-sider__organization"
               >
                 {orgName ?? t("layout.countryFallback")}
               </Text>
-            </Text>
-          )}
+            )}
+          </div>
           {mobile ? (
             <TextButton
               icon={<MenuFoldOutlined />}
@@ -295,13 +281,26 @@ export function AppShell({ children, orgName }: Props) {
           {/* Legal footer */}
           <div
             style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: token.marginXS,
               marginTop: token.marginXL,
               paddingTop: token.paddingSM,
               borderTop: `1px solid ${token.colorBorderSecondary}`,
             }}
           >
-            <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+            <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
               {t("layout.legalFooter")}
+            </Text>
+            <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
+              © 2026 LimitRadar · {t("layout.createdBy")} {" "}
+              <Link
+                href="https://github.com/mdostanic85"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Miloš Dostanić
+              </Link>
             </Text>
           </div>
         </Content>

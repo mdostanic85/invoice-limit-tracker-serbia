@@ -1,4 +1,4 @@
-// Invoice Limit Tracker Serbia — Prisma Schema
+// LimitRadar — Prisma Schema
 // All monetary values stored as Decimal(18,4) — never float
 // Every domain table is scoped by organizationId for multi-tenant isolation
 

@@ -56,7 +56,7 @@ function TooltipShell({
       <Text style={{ display: "block", color: token.colorPrimary, fontWeight: 600, marginBottom: 6 }}>
         {value}
       </Text>
-      <Text type="secondary" style={{ fontSize: token.fontSizeSM, lineHeight: 1.45 }}>
+      <Text type="secondary" style={{ fontSize: token.fontSizeLG, lineHeight: 1.45 }}>
         {hint}
       </Text>
     </div>
@@ -175,13 +175,13 @@ export function MonthlyRevenueChart({ data, year }: MonthlyRevenueChartProps) {
         />
         <XAxis
           dataKey="label"
-          tick={{ fill: token.colorTextSecondary, fontSize: 11 }}
+          tick={{ fill: token.colorTextSecondary, fontSize: 13 }}
           axisLine={{ stroke: token.colorBorderSecondary }}
           tickLine={false}
         />
         <YAxis
           tickFormatter={(v) => `${Math.round(v / 1000)}k`}
-          tick={{ fill: token.colorTextSecondary, fontSize: isMobile ? 10 : 11 }}
+          tick={{ fill: token.colorTextSecondary, fontSize: 13 }}
           axisLine={false}
           tickLine={false}
           width={isMobile ? 36 : 44}
@@ -254,7 +254,7 @@ export function ClientRevenueChart({ data }: { data: ClientChartPoint[] }) {
         <XAxis
           type="number"
           tickFormatter={(v) => `${Math.round(v / 1000)}k`}
-          tick={{ fill: token.colorTextSecondary, fontSize: 11 }}
+          tick={{ fill: token.colorTextSecondary, fontSize: 13 }}
           axisLine={false}
           tickLine={false}
         />
@@ -262,7 +262,7 @@ export function ClientRevenueChart({ data }: { data: ClientChartPoint[] }) {
           type="category"
           dataKey="name"
           width={isMobile ? 72 : 100}
-          tick={{ fill: token.colorText, fontSize: isMobile ? 11 : 12 }}
+          tick={{ fill: token.colorText, fontSize: 13 }}
           axisLine={false}
           tickLine={false}
         />
@@ -310,13 +310,13 @@ export function CumulativeRevenueChart({ data, threshold }: CumulativeRevenueCha
         />
         <XAxis
           dataKey="label"
-          tick={{ fill: token.colorTextSecondary, fontSize: 11 }}
+          tick={{ fill: token.colorTextSecondary, fontSize: 13 }}
           axisLine={{ stroke: token.colorBorderSecondary }}
           tickLine={false}
         />
         <YAxis
           tickFormatter={(v) => `${Math.round(v / 1000)}k`}
-          tick={{ fill: token.colorTextSecondary, fontSize: isMobile ? 10 : 11 }}
+          tick={{ fill: token.colorTextSecondary, fontSize: 13 }}
           axisLine={false}
           tickLine={false}
           width={isMobile ? 40 : 48}
@@ -342,7 +342,7 @@ export function CumulativeRevenueChart({ data, threshold }: CumulativeRevenueCha
             value: formatRsd(String(threshold)),
             position: "insideTopRight",
             fill: token.colorError,
-            fontSize: 11,
+            fontSize: 13,
           }}
         />
         <Line

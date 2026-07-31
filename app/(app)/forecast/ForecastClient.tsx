@@ -425,7 +425,7 @@ export function ForecastClient({ data }: Props) {
     if (!row.isEditable) {
       if (expectedDraft > 0) {
         return (
-          <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+          <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
             {t("forecast.draftInvoiceOnly", {
               amount: formatRsd(expectedDraft),
             })}
@@ -433,7 +433,7 @@ export function ForecastClient({ data }: Props) {
         );
       }
       return (
-        <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+        <Text type="secondary" style={{ fontSize: token.fontSizeLG }}>
           {t("common.dash")}
         </Text>
       );
@@ -488,7 +488,7 @@ export function ForecastClient({ data }: Props) {
           />
         </Flex>
         {amountValue > 0 && (
-          <Text type="secondary" style={{ fontSize: 11, lineHeight: 1.3 }}>
+          <Text type="secondary" style={{ fontSize: token.fontSizeLG, lineHeight: 1.4 }}>
             {cell.currency === "RSD"
               ? formatRsd(rsdValue)
               : t("forecast.convertedRsd", {
@@ -500,7 +500,7 @@ export function ForecastClient({ data }: Props) {
           </Text>
         )}
         {expectedDraft > 0 && (
-          <Text type="success" style={{ fontSize: 11, lineHeight: 1.3 }}>
+          <Text type="success" style={{ fontSize: token.fontSizeLG, lineHeight: 1.4 }}>
             {t("forecast.draftInvoiceIncluded", {
               draft: formatRsd(expectedDraft),
               total: formatRsd(rsdValue + expectedDraft),
@@ -627,7 +627,7 @@ export function ForecastClient({ data }: Props) {
                         style={{
                           color: progressColor,
                           fontWeight: 600,
-                          fontSize: token.fontSizeSM,
+                          fontSize: token.fontSizeLG,
                         }}
                       >
                         {formatPercent(projection.projectedPercentUsed, 1)}
@@ -648,19 +648,26 @@ export function ForecastClient({ data }: Props) {
                     <Statistic
                       title={t("forecast.invoicedYtd")}
                       value={formatRsd(actualTotalValue)}
-                      styles={{ content: { fontSize: token.fontSizeSM } }}
+                      styles={{
+                        title: { fontSize: token.fontSizeLG },
+                        content: { fontSize: "1.25rem" },
+                      }}
                     />
                     <Statistic
                       title={t("forecast.plannedRemaining")}
                       value={formatRsd(projection.forecastContribution)}
-                      styles={{ content: { fontSize: token.fontSizeSM } }}
+                      styles={{
+                        title: { fontSize: token.fontSizeLG },
+                        content: { fontSize: "1.25rem" },
+                      }}
                     />
                     <Statistic
                       title={t("forecast.projectedTotal")}
                       value={formatRsd(projection.projectedTotal)}
                       styles={{
+                        title: { fontSize: token.fontSizeLG },
                         content: {
-                          fontSize: token.fontSizeSM,
+                          fontSize: "1.25rem",
                           color: exceeds ? token.colorError : token.colorText,
                         },
                       }}
@@ -673,8 +680,9 @@ export function ForecastClient({ data }: Props) {
                           : formatRsd(remaining)
                       }
                       styles={{
+                        title: { fontSize: token.fontSizeLG },
                         content: {
-                          fontSize: token.fontSizeSM,
+                          fontSize: "1.25rem",
                           color: exceeds ? token.colorError : token.colorSuccess,
                         },
                       }}

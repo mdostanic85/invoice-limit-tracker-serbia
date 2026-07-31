@@ -70,13 +70,14 @@ export const en: MessageTree = {
     export: "Export",
   },
   layout: {
-    appName: "Invoice Tracker",
+    appName: "LimitRadar",
     countryFallback: "Serbia",
-    pageTitle: "Invoice Limit Tracker Serbia",
+    pageTitle: "LimitRadar",
     pageDescription:
-      "Track invoiced revenue in RSD, monitor your annual threshold, and plan future billing — for Serbian entrepreneurs and agencies.",
+      "LimitRadar tracks invoiced revenue in RSD, monitors your annual threshold, and helps you plan future billing.",
     legalFooter:
-      "Invoice Limit Tracker Serbia is an informational planning tool only. It does not constitute accounting, tax, or legal advice. Exchange rates are sourced from the NBS official middle rate list for planning purposes.",
+      "LimitRadar is an informational planning tool only. It does not constitute accounting, tax, or legal advice. Exchange rates are sourced from the NBS official middle rate list for planning purposes.",
+    createdBy: "Created by",
   },
   status: {
     invoice: {
@@ -530,7 +531,7 @@ export const en: MessageTree = {
     placeholderRateLabel: "e.g. Budget rate 2026",
   },
   onboarding: {
-    title: "Invoice Limit Tracker Serbia",
+    title: "LimitRadar",
     subtitle: "Set up your workspace in under a minute",
     stepOrg: "Organization",
     stepDisclaimer: "Disclaimer",
@@ -594,7 +595,7 @@ export const en: MessageTree = {
     selectTaxCategory: "Select your tax category",
     regimeAlert: "Informational only — not legal or tax advice.",
     effectiveFrom: "Effective from",
-    authTitle: "Invoice Limit Tracker Serbia",
+    authTitle: "LimitRadar",
     thresholdExceededTitle: "Annual limit exceeded — {year} ({basis} basis)",
     thresholdExceededBody:
       "You have invoiced {actual}, which exceeds the annual limit of {threshold} ({percent} used). Review cancelled invoices or adjust your limit.",

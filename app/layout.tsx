@@ -7,9 +7,19 @@ import { APP_FONT_FAMILY } from "@/lib/theme/tokens";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Invoice Limit Tracker Serbia",
+  metadataBase: new URL("https://limitradar.vercel.app"),
+  applicationName: "LimitRadar",
+  title: "LimitRadar",
   description:
-    "Track invoiced revenue in RSD, monitor your annual threshold, and plan future billing — for Serbian entrepreneurs and agencies.",
+    "LimitRadar tracks invoiced revenue in RSD, monitors your annual threshold, and helps you plan future billing.",
+  authors: [
+    {
+      name: "Miloš Dostanić",
+      url: "https://github.com/mdostanic85",
+    },
+  ],
+  creator: "Miloš Dostanić",
+  publisher: "Miloš Dostanić",
 };
 
 export const viewport: Viewport = {

@@ -19,11 +19,12 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { createOrganizationAction, acceptDisclaimerAction } from "@/app/actions/org-actions";
 import { PrimaryButton, APP_CONTROL_SIZE } from "@/components/layout/AppButton";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 import { CountryLimitFormFields } from "@/components/domain/CountryLimitFormFields";
 import { getCountryFormDefaults } from "@/lib/domain/country-tax-rules";
 import { LocaleProvider, useLocale } from "@/components/providers/LocaleProvider";
 
-const { Title, Paragraph, Text } = Typography;
+const { Paragraph, Text } = Typography;
 const { useToken } = theme;
 
 function OnboardingContent() {
@@ -93,9 +94,7 @@ function OnboardingContent() {
       >
         <Space orientation="vertical" size="large" style={{ width: "100%" }}>
           <div style={{ textAlign: "center" }}>
-            <Title level={3} style={{ marginBottom: token.marginXS }}>
-              {t("onboarding.title")}
-            </Title>
+            <BrandLogo className="onboarding-brand-logo" />
             <Text type="secondary">
               {t("onboarding.subtitle")}
             </Text>
