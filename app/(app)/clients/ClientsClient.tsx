@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect -- Server refreshes intentionally replace the optimistic client collection. */
+
 import {
   Tag,
   Typography,

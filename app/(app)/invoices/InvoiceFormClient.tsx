@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect -- Edit snapshots and refreshed client props intentionally hydrate local form state. */
+
 import {
   Form,
   Input,
@@ -59,7 +61,7 @@ import {
   currencySelectOptions,
 } from "@/lib/constants/currencies";
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 const { useToken } = theme;
 
 const CURRENCIES = INVOICE_CURRENCIES;
@@ -87,7 +89,7 @@ interface RatePreview {
   sourceUrl: string | null;
 }
 
-interface Client extends ClientFormClient {}
+type Client = ClientFormClient;
 
 interface InitialInvoice {
   id: string;

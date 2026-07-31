@@ -49,6 +49,7 @@ export const sr: MessageTree = {
     themePreference: "Preferencija teme",
     closeNav: "Zatvori navigaciju",
     toggleNav: "Prebaci navigaciju",
+    logout: "Odjavi se",
     organization: "Organizacija",
     disclaimer: "Odricanje od odgovornosti",
     light: "Svetla",

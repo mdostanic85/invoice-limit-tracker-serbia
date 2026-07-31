@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db/prisma";
 import { getOrgContextSafe } from "@/lib/auth/get-org-context";
 import { formatDate, formatRate } from "@/lib/utils/format";

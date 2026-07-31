@@ -3,10 +3,7 @@
 import { getOrgContext } from "@/lib/auth/get-org-context";
 import { prisma } from "@/lib/db/prisma";
 import { writeAuditEvent } from "@/lib/services/audit-service";
-import {
-  hasHourlyRateChanged,
-  recordClientHourlyRate,
-} from "@/lib/services/client-billing";
+import { hasHourlyRateChanged } from "@/lib/services/client-billing";
 import { createClientSchema, updateClientSchema } from "@/lib/validation/schemas";
 import { serializeForClient } from "@/lib/utils/serialize";
 import type { ClientBillingModel } from "@prisma/client";

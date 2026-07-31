@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect -- Theme preference is read from browser storage only after mounting. */
+
 import {
   createContext,
   useCallback,

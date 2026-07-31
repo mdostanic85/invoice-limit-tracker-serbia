@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect -- Opening a drawer intentionally resets data from the selected client. */
+
 import { App, Form } from "antd";
 import { useEffect, useState, useTransition } from "react";
 import {

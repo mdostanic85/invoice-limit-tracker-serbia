@@ -28,6 +28,60 @@ export function getClerkAppearance(isDark: boolean) {
       borderRadius: `${t.borderRadius}px`,
     },
     elements: {
+      rootBox: {
+        width: "100%",
+      },
+      cardBox: {
+        width: "100%",
+      },
+      card: {
+        width: "100%",
+        padding: "0",
+        border: `1px solid ${String(t.colorBorderSecondary)}`,
+        boxShadow: String(t.boxShadowTertiary),
+      },
+      headerTitle: {
+        display: "none",
+      },
+      headerSubtitle: {
+        display: "none",
+      },
+      main: {
+        padding: "24px 32px 20px",
+      },
+      footer: {
+        padding: "0",
+      },
+      footerAction: {
+        padding: "8px 16px",
+      },
+      footerAction__signIn: {
+        padding: "8px 16px",
+      },
+      footerAction__signUp: {
+        padding: "8px 16px",
+      },
+      footerItem: {
+        padding: "8px 16px",
+      },
+      userButtonBox: {
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "32px",
+        lineHeight: "0",
+      },
+      userButtonTrigger: {
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "32px",
+        lineHeight: "0",
+      },
+      avatarBox: {
+        width: "28px",
+        height: "28px",
+      },
       userButtonPopoverCard: {
         fontFamily: APP_FONT_FAMILY,
       },

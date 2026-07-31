@@ -24,13 +24,6 @@ body {
   --invoice-tracker-space-dense: 12px;
 }
 
-/* Clerk popover — inherit app sans-serif (fallback if appearance prop misses a node) */
-.cl-userButtonPopoverCard,
-.cl-userButtonPopoverCard * {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif !important;
-}
-
 .app-topbar-toolbar {
   display: inline-flex;
   align-items: center;
@@ -76,6 +69,21 @@ body {
   height: 100%;
 }
 
+.app-topbar-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.app-topbar-logout.ant-btn {
+  color: var(--invoice-tracker-color-text-secondary);
+}
+
+.app-topbar-logout.ant-btn:hover {
+  color: var(--invoice-tracker-color-text);
+}
+
 .app-topbar-user {
   display: inline-flex;
   align-items: center;
@@ -84,20 +92,243 @@ body {
   line-height: 0;
 }
 
-.app-topbar-user .cl-userButtonBox,
-.app-topbar-user .cl-userButtonTrigger {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 32px !important;
-  line-height: 0 !important;
-  vertical-align: middle !important;
+/* Authentication — compact enough for a standard laptop viewport. */
+.auth-shell {
+  --auth-bg-layout: #f3f5f8;
+  --auth-bg-container: #ffffff;
+  --auth-border: #e4e8ee;
+  --auth-primary: #1565c0;
+  --auth-text: #1b2430;
+  --auth-text-secondary: #5a6573;
+
+  display: grid;
+  grid-template-columns: minmax(320px, 0.75fr) minmax(500px, 1.25fr);
+  min-height: 100dvh;
+  background: var(--auth-bg-layout);
+  color: var(--auth-text);
 }
 
-.app-topbar-user .cl-userButtonTrigger .cl-avatarBox,
-.app-topbar-user .cl-avatarBox {
-  width: 28px !important;
-  height: 28px !important;
+html[data-theme="dark"] .auth-shell {
+  --auth-bg-layout: #0f1216;
+  --auth-bg-container: #181c22;
+  --auth-border: #2a3038;
+  --auth-primary: #5b9cf5;
+  --auth-text: #e8eaed;
+  --auth-text-secondary: #a8b0bb;
+}
+
+.auth-shell__story {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: clamp(28px, 4vw, 56px);
+  overflow: hidden;
+  border-right: 1px solid;
+  border-color: var(--auth-border);
+  background: var(--auth-bg-container);
+}
+
+.auth-shell__story::after {
+  position: absolute;
+  right: -150px;
+  bottom: -190px;
+  width: 380px;
+  height: 380px;
+  border: 1px solid var(--auth-border);
+  border-radius: 50%;
+  content: "";
+  opacity: 0.7;
+}
+
+.auth-shell__brand {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+}
+
+.auth-shell__brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--auth-primary);
+  color: #fff;
+  font-size: 18px;
+}
+
+.auth-shell__brand span:last-child {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.auth-shell__brand strong {
+  font-size: 14px;
+}
+
+.auth-shell__brand small {
+  color: var(--auth-text-secondary);
+  font-size: 12px;
+}
+
+.auth-shell__story-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  margin-block: auto;
+  padding-block: 40px;
+}
+
+.auth-shell__story-label,
+.auth-shell__eyebrow {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--auth-primary);
+}
+
+.auth-shell__story-copy h2 {
+  max-width: 430px;
+  font-size: clamp(34px, 4vw, 50px);
+  font-weight: 650;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.auth-shell__story-copy p {
+  max-width: 460px;
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--auth-text-secondary);
+}
+
+.auth-shell__features {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+  list-style: none;
+  color: var(--auth-text-secondary);
+  font-size: 13px;
+}
+
+.auth-shell__features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-shell__features .anticon {
+  color: var(--auth-primary);
+}
+
+.auth-shell__trust {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 24px;
+  color: var(--auth-text-secondary);
+  font-size: 12px;
+}
+
+.auth-shell__main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 24px clamp(24px, 5vw, 72px);
+}
+
+.auth-shell__form-wrap {
+  width: min(100%, 480px);
+}
+
+.auth-shell__heading {
+  margin-bottom: 16px;
+}
+
+.auth-shell__heading h1 {
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.auth-shell__heading p {
+  max-width: 420px;
+  margin-top: 8px;
+  color: var(--auth-text-secondary);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.auth-shell__clerk {
+  width: 100%;
+  min-height: 512px;
+}
+
+.auth-shell__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: inherit;
+  border: 1px solid var(--auth-border);
+  border-radius: var(--invoice-tracker-border-radius);
+  background: var(--auth-bg-container);
+}
+
+@media (max-width: 900px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-shell__story {
+    min-height: auto;
+    padding: 16px 20px;
+    border-right: 0;
+    border-bottom: 1px solid;
+  }
+
+  .auth-shell__story-copy,
+  .auth-shell__trust {
+    display: none;
+  }
+
+  .auth-shell__main {
+    min-height: auto;
+    padding: 28px 20px 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-shell__story {
+    padding: 14px 16px;
+  }
+
+  .auth-shell__main {
+    padding: 24px 12px 32px;
+  }
+
+  .auth-shell__heading {
+    padding-inline: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-topbar-logout__label {
+    display: none;
+  }
 }
 
 /* Financial figures: consistent digit width in tables and KPIs */

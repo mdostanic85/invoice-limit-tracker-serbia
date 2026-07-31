@@ -82,12 +82,6 @@ export function AnnualPlanClient({
   }
 
   const thresholdValue = parseFloat(threshold);
-  const maxCumulative = Math.max(
-    ...cumulativeData.map((d) => d.cumulative),
-    thresholdValue,
-    1
-  );
-
   const basisLabel = reportingBasisLabel(t, basis);
   const proj = projections[selectedScenario];
 

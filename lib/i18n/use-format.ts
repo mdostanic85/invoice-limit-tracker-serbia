@@ -24,6 +24,6 @@ export function useFormat() {
       formatPercent,
       dateLocale,
     }),
-    [dateLocale]
+    [dateLocale, locale]
   );
 }

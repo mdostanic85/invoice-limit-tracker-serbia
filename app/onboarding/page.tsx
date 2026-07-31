@@ -32,7 +32,7 @@ function OnboardingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const startStep = searchParams.get("step") === "disclaimer" ? 1 : 0;
-  const [currentStep, setCurrentStep] = useState(startStep);
+  const currentStep = startStep;
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);

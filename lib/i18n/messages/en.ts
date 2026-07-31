@@ -49,6 +49,7 @@ export const en: MessageTree = {
     themePreference: "Theme preference",
     closeNav: "Close navigation",
     toggleNav: "Toggle navigation",
+    logout: "Log out",
     organization: "Organization",
     disclaimer: "Disclaimer",
     light: "Light",
